@@ -1,0 +1,2783 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description"
+    content="Khám phá hành trình tìm đường cứu nước của Chủ tịch Hồ Chí Minh qua bản đồ Trái Đất 3D tương tác.">
+  <title>Tự hào Việt Nam – Trái Đất 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Playfair+Display:wght@700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-deep: #1a0505;
+      --bg: #6b1a18;
+      --globe: #8c2320;
+      --gold: #ffd700;
+      --gold2: #ffb300;
+      --ink: #fff;
+      --cyan: #35f2e6;
+      --cyan2: #00c8c0;
+      --panel: #1c0808;
+      --panel-ink: #ffe8c8;
+      --border: rgba(255, 200, 100, .18);
+      --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-display: "Playfair Display", Georgia, serif;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      background: radial-gradient(ellipse at 50% 60%, #4a1210 0%, #1a0505 100%);
+      color: var(--ink);
+      font-family: var(--font);
+      overflow: hidden;
+    }
+
+    /* ══════════════════ STARS BG ══════════════════ */
+    #stars-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(1px 1px at 10% 12%, rgba(255, 255, 255, .7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 23% 45%, rgba(255, 255, 255, .5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 35% 7%, rgba(255, 240, 180, .8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48% 31%, rgba(255, 255, 255, .6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 61% 19%, rgba(255, 255, 255, .4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 72% 55%, rgba(255, 255, 255, .7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 84% 8%, rgba(255, 250, 200, .6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 91% 38%, rgba(255, 255, 255, .5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5% 72%, rgba(255, 255, 255, .5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 18% 88%, rgba(255, 255, 255, .4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 29% 63%, rgba(255, 230, 150, .6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 42% 79%, rgba(255, 255, 255, .5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 68%, rgba(255, 255, 255, .3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 66% 85%, rgba(255, 255, 255, .6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 77% 74%, rgba(255, 250, 200, .5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88% 91%, rgba(255, 255, 255, .4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 95% 62%, rgba(255, 255, 255, .6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 3% 52%, rgba(255, 255, 255, .3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 15% 25%, rgba(255, 255, 255, .5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 57% 44%, rgba(255, 240, 160, .7) 0%, transparent 100%);
+      animation: twinkle 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% {
+        opacity: .7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: .6;
+      }
+    }
+
+    /* ══════════════════ GLOW OVERLAY ══════════════════ */
+    #glow-ring {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: 0 0 120px 60px rgba(180, 40, 30, .35), 0 0 300px 120px rgba(120, 20, 15, .2);
+      transform: translate(-50%, -50%);
+      width: 60vmin;
+      height: 60vmin;
+      transition: left .5s ease, top .5s ease;
+    }
+
+    /* ══════════════════ CANVAS ══════════════════ */
+    #stage {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+      z-index: 2;
+    }
+
+    #stage.grabbing {
+      cursor: grabbing;
+    }
+
+    #stage.hot {
+      cursor: pointer;
+    }
+
+    /* ══════════════════ HEADER ══════════════════ */
+    header {
+      position: fixed;
+      top: env(safe-area-inset-top, 0px);
+      left: 0;
+      padding: 22px 28px 18px;
+      pointer-events: none;
+      max-width: min(520px, 100%);
+      z-index: 6;
+    }
+
+    .header-glass {
+      background: linear-gradient(135deg, rgba(80, 10, 8, .72) 0%, rgba(40, 5, 5, .55) 100%);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255, 180, 80, .18);
+      border-radius: 18px;
+      padding: 18px 22px 14px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 220, 100, .15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-glass::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -30%;
+      width: 160%;
+      height: 200%;
+      background: conic-gradient(from 0deg at 50% 50%,
+          transparent 0deg, rgba(255, 215, 0, .06) 30deg, transparent 60deg,
+          transparent 180deg, rgba(255, 215, 0, .04) 210deg, transparent 240deg);
+      animation: headerSheen 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes headerSheen {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Flag badge */
+    .flag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(198, 30, 28, .7);
+      border: 1px solid rgba(255, 220, 80, .35);
+      border-radius: 999px;
+      padding: 3px 10px 3px 5px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      color: rgba(255, 255, 220, .9);
+      text-transform: uppercase;
+    }
+
+    .flag-badge .star-icon {
+      font-size: 14px;
+      filter: drop-shadow(0 0 4px rgba(255, 220, 0, .8));
+      animation: starPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes starPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(255, 220, 0, .8));
+      }
+
+      50% {
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 8px rgba(255, 220, 0, 1));
+      }
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 4.5vw, 38px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: .02em;
+      background: linear-gradient(135deg, #ffe066 0%, #ffb300 40%, #fff3a0 70%, #ffcc00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 12px rgba(255, 180, 0, .5));
+      position: relative;
+    }
+
+    h1::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg,
+          transparent 0%, rgba(255, 255, 255, .4) 45%, transparent 55%, transparent 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 100%;
+      animation: shimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% center;
+      }
+
+      100% {
+        background-position: -200% center;
+      }
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-style: italic;
+      color: rgba(255, 240, 200, .75);
+      margin: 0 0 10px;
+      line-height: 1.4;
+    }
+
+    .hint-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, .65);
+      margin: 3px 0;
+      line-height: 1.4;
+    }
+
+    .hint-line .icon {
+      font-size: 14px;
+      flex: none;
+    }
+
+    .hint-line b {
+      color: rgba(53, 242, 230, .9);
+      font-weight: 700;
+    }
+
+    /* ══════════════════ ADD MARKER BUTTON ══════════════════ */
+    #add-marker-btn {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 16px);
+      right: 160px;
+      font: 600 13.5px var(--font);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255, 165, 0, .85) 0%, rgba(200, 100, 0, .85) 100%);
+      border: 1px solid rgba(255, 220, 80, .45);
+      border-radius: 999px;
+      padding: 10px 18px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 220, 80, .3);
+      transition: all .25s ease;
+      letter-spacing: .03em;
+    }
+    #add-marker-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 185, 30, .95) 0%, rgba(230, 120, 0, .95) 100%);
+      box-shadow: 0 6px 28px rgba(0,0,0,.5), 0 0 20px rgba(255,165,0,.3);
+      transform: translateY(-1px);
+    }
+    #add-marker-btn.active {
+      background: linear-gradient(135deg, rgba(255, 200, 0, 1) 0%, rgba(220, 130, 0, 1) 100%);
+      box-shadow: 0 0 0 3px rgba(255,200,0,.5), 0 6px 28px rgba(0,0,0,.5);
+      animation: pulse-btn 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(255,200,0,.5), 0 6px 28px rgba(0,0,0,.5); }
+      50% { box-shadow: 0 0 0 6px rgba(255,200,0,.25), 0 6px 28px rgba(0,0,0,.5); }
+    }
+    /* ══════════════════ QR BUTTON & MODAL ══════════════════ */
+    #qr-btn {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 16px);
+      right: 295px;
+      font: 600 13.5px var(--font);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(0, 180, 160, .85) 0%, rgba(0, 120, 110, .85) 100%);
+      border: 1px solid rgba(80, 240, 220, .45);
+      border-radius: 999px;
+      padding: 10px 18px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(100, 255, 230, .3);
+      transition: all .25s ease;
+      letter-spacing: .03em;
+    }
+    #qr-btn:hover {
+      background: linear-gradient(135deg, rgba(30, 210, 190, .95) 0%, rgba(0, 150, 140, .95) 100%);
+      box-shadow: 0 6px 28px rgba(0,0,0,.5), 0 0 20px rgba(0,220,200,.3);
+      transform: translateY(-1px);
+    }
+    @media (max-width: 680px) {
+      #qr-btn { right: 10px; top: calc(env(safe-area-inset-top,0px) + 110px); padding: 8px 14px; font-size: 12px; }
+    }
+    #qr-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(8,2,2,.8);
+      backdrop-filter: blur(8px);
+      z-index: 30;
+    }
+    #qr-modal.open { display: flex; }
+    /* ══════════════════ FLOATING ZOOM CONTROLS ══════════════════ */
+    #zoom-controls {
+      position: fixed;
+      right: 18px;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 8;
+    }
+    .zoom-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(60, 15, 15, .90) 0%, rgba(20, 4, 4, .95) 100%);
+      border: 1.5px solid rgba(255, 200, 80, .45);
+      color: #ffe8b0;
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 220, 100, .3);
+      transition: all .2s cubic-bezier(.2, .8, .3, 1);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .zoom-btn:hover {
+      background: linear-gradient(135deg, rgba(160, 35, 30, .95) 0%, rgba(90, 12, 12, .95) 100%);
+      border-color: rgba(255, 230, 120, .8);
+      color: #fff;
+      transform: scale(1.08);
+      box-shadow: 0 10px 28px rgba(220, 60, 40, .45), 0 0 16px rgba(255, 180, 50, .35);
+    }
+    .zoom-btn:active {
+      transform: scale(0.92);
+      background: rgba(210, 45, 35, 1);
+    }
+    .zoom-btn.reset-btn {
+      font-size: 19px;
+    }
+    @media (max-width: 560px) {
+      #zoom-controls {
+        right: 12px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+        gap: 8px;
+      }
+      .zoom-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+      .zoom-btn.reset-btn {
+        font-size: 17px;
+      }
+    }
+    /* ══════════════════ CUSTOM MARKER MODAL ══════════════════ */
+    #custom-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(8,2,2,.8);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+    }
+    #custom-modal.open { display: flex; }
+    .custom-card {
+      background: linear-gradient(160deg, #1e0808 0%, #120404 100%);
+      color: var(--panel-ink);
+      border-radius: 20px;
+      width: min(560px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,165,0,.3), inset 0 1px 0 rgba(255,200,80,.12);
+      animation: pop .28s cubic-bezier(.22,1,.36,1);
+      position: relative;
+    }
+    .custom-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #ffa500 20%, #ffd700 50%, #ffa500 80%, transparent);
+      border-radius: 20px 20px 0 0;
+    }
+    .custom-card::-webkit-scrollbar { width: 5px; }
+    .custom-card::-webkit-scrollbar-track { background: transparent; }
+    .custom-card::-webkit-scrollbar-thumb { background: rgba(255,165,0,.3); border-radius: 5px; }
+    .custom-card-body { padding: 28px 28px 24px; }
+    .custom-card-body h3 {
+      margin: 0 0 20px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(255,180,80,.8);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,180,80,.25);
+      border-radius: 10px;
+      color: var(--panel-ink);
+      font: 14px var(--font);
+      padding: 10px 14px;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      outline: none;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: rgba(255,165,0,.6);
+      box-shadow: 0 0 0 3px rgba(255,165,0,.15);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(255,220,180,.35); }
+    .coord-row { display: flex; gap: 10px; }
+    .coord-row .form-group { flex: 1; }
+    .form-hint {
+      font-size: 11.5px;
+      color: rgba(255,200,100,.5);
+      margin-top: 4px;
+    }
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .form-actions button {
+      font: 600 13.5px var(--font);
+      border-radius: 10px;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: all .2s ease;
+      border: 1px solid rgba(255,200,80,.35);
+      background: rgba(255,200,80,.08);
+      color: rgba(255,220,160,.85);
+    }
+    .form-actions button:hover {
+      background: rgba(255,200,80,.18);
+      border-color: rgba(255,200,80,.55);
+      transform: translateY(-1px);
+    }
+    .form-actions button.btn-primary {
+      background: linear-gradient(135deg, #d47e00 0%, #a85500 100%);
+      border-color: rgba(255,180,0,.4);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(180,100,0,.4);
+    }
+    .form-actions button.btn-primary:hover {
+      background: linear-gradient(135deg, #f09000 0%, #c06000 100%);
+      box-shadow: 0 6px 22px rgba(200,120,0,.5);
+    }
+    .form-actions button.btn-danger {
+      background: linear-gradient(135deg, #c0302c 0%, #8c1818 100%);
+      border-color: rgba(255,100,80,.4);
+      color: #fff;
+    }
+    .form-actions .spacer { flex: 1; }
+    /* milestone list in modal */
+    .milestone-list { margin-top: 18px; }
+    .milestone-item {
+      background: rgba(255,165,0,.07);
+      border: 1px solid rgba(255,165,0,.18);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .milestone-item-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .milestone-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ffa500;
+      box-shadow: 0 0 8px #ffa500;
+      flex: none;
+      margin-top: 4px;
+      animation: dotPulse 2.5s ease-in-out infinite;
+    }
+    .milestone-when {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      flex: 1;
+    }
+    .milestone-text {
+      font-size: 13px;
+      color: rgba(255,220,170,.8);
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+    .milestone-img {
+      max-width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .milestone-no-img {
+      font-size: 12px;
+      color: rgba(255,200,100,.4);
+      margin-bottom: 6px;
+    }
+    .milestone-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .milestone-actions button {
+      font: 600 11.5px var(--font);
+      border-radius: 7px;
+      padding: 5px 11px;
+      cursor: pointer;
+      transition: all .15s ease;
+      border: 1px solid rgba(255,200,80,.25);
+      background: rgba(255,200,80,.06);
+      color: rgba(255,220,160,.75);
+    }
+    .milestone-actions button:hover {
+      background: rgba(255,200,80,.15);
+      border-color: rgba(255,200,80,.45);
+    }
+    .milestone-actions button.btn-del {
+      border-color: rgba(255,80,60,.3);
+      color: rgba(255,120,100,.8);
+    }
+    .milestone-actions button.btn-del:hover {
+      background: rgba(255,60,40,.15);
+      border-color: rgba(255,80,60,.6);
+    }
+    .add-milestone-section {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(255,165,0,.05);
+      border: 1px dashed rgba(255,165,0,.25);
+      border-radius: 12px;
+    }
+    .add-milestone-section h4 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,180,80,.8);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .custom-loc-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .custom-loc-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffa500;
+      box-shadow: 0 0 10px #ffa500;
+      flex: none;
+    }
+    .custom-loc-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffe8b0;
+    }
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,165,0,.3), transparent);
+      margin: 18px 0;
+    }
+    /* Add mode cursor hint */
+    #add-hint {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom,0px) + 80px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,140,0,.92);
+      color: #fff;
+      font: 700 13.5px var(--font);
+      border-radius: 999px;
+      padding: 10px 24px;
+      z-index: 7;
+      display: none;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    #add-hint.show { display: block; animation: fadeUp .3s ease-out; }
+    @media (max-width: 560px) {
+      #add-marker-btn { right: 10px; top: calc(env(safe-area-inset-top,0px) + 62px); padding: 9px 14px; font-size: 12.5px; }
+    }
+    /* ══════════════════ TIMELINE TOGGLE ══════════════════ */
+    #tl-toggle {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 16px);
+      right: 16px;
+      /* note: add-marker-btn is at right:160px */
+      font: 600 13.5px var(--font);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(180, 40, 30, .75) 0%, rgba(100, 15, 12, .75) 100%);
+      border: 1px solid rgba(255, 180, 80, .35);
+      border-radius: 999px;
+      padding: 10px 20px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 200, 80, .2);
+      transition: all .25s ease;
+      letter-spacing: .03em;
+    }
+
+    #tl-toggle::before {
+      content: '🗺️';
+      font-size: 16px;
+    }
+
+    #tl-toggle:hover {
+      background: linear-gradient(135deg, rgba(220, 60, 40, .85) 0%, rgba(140, 20, 15, .85) 100%);
+      box-shadow: 0 6px 28px rgba(0, 0, 0, .5), 0 0 20px rgba(255, 150, 50, .2);
+      transform: translateY(-1px);
+    }
+
+    /* ══════════════════ TIMELINE PANEL ══════════════════ */
+    #tl {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 66px);
+      right: 16px;
+      width: min(400px, calc(100% - 32px));
+      max-height: calc(100% - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 90px);
+      overflow-y: auto;
+      background: linear-gradient(160deg, rgba(50, 8, 8, .92) 0%, rgba(20, 3, 3, .96) 100%);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      border: 1px solid rgba(255, 160, 60, .22);
+      border-radius: 16px;
+      padding: 8px 8px 12px;
+      display: none;
+      z-index: 6;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 200, 80, .1);
+      animation: slideInPanel .25s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    @keyframes slideInPanel {
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    #tl.open {
+      display: block;
+    }
+
+    #tl::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #tl::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #tl::-webkit-scrollbar-thumb {
+      background: rgba(255, 200, 80, .3);
+      border-radius: 4px;
+    }
+
+    #tl details {
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 2px 0;
+    }
+
+    #tl details:last-child {
+      border-bottom: 0;
+    }
+
+    #tl summary {
+      cursor: pointer;
+      padding: 10px 8px;
+      font-weight: 800;
+      font-size: 13px;
+      line-height: 1.35;
+      list-style: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--gold);
+      position: relative;
+    }
+
+    #tl summary::-webkit-details-marker {
+      display: none;
+    }
+
+    #tl summary::before {
+      content: '▶';
+      font-size: 9px;
+      flex: none;
+      margin-top: 2px;
+      transition: transform .2s ease;
+      opacity: .7;
+    }
+
+    #tl details[open]>summary::before {
+      transform: rotate(90deg);
+    }
+
+    #tl summary:hover {
+      color: #ffe88a;
+    }
+
+    #tl summary small {
+      display: block;
+      font-weight: 400;
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, .6);
+      margin-top: 3px;
+    }
+
+    #tl .ev {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      width: 100%;
+      text-align: left;
+      font: 400 13px var(--font);
+      line-height: 1.4;
+      color: rgba(255, 255, 255, .85);
+      background: transparent;
+      border: 0;
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: background .18s ease, transform .15s ease;
+    }
+
+    #tl .ev:hover {
+      background: rgba(255, 200, 80, .12);
+      transform: translateX(3px);
+    }
+
+    #tl .ev i {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      transform: translateY(2px);
+      animation: dotPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px var(--cyan);
+      }
+
+      50% {
+        box-shadow: 0 0 14px var(--cyan), 0 0 22px rgba(53, 242, 230, .4);
+      }
+    }
+
+    #tl .ev b {
+      font-weight: 700;
+      color: rgba(255, 220, 100, .9);
+    }
+
+    button:focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    /* ══════════════════ MODAL OVERLAY ══════════════════ */
+    #modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(8, 2, 2, .75);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+
+    #modal.open {
+      display: flex;
+    }
+
+    /* ══════════════════ CARD ══════════════════ */
+    .card {
+      background: linear-gradient(160deg, #1e0808 0%, #120404 100%);
+      color: var(--panel-ink);
+      border-radius: 20px;
+      width: min(740px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, .7),
+        0 0 0 1px rgba(255, 160, 60, .2),
+        inset 0 1px 0 rgba(255, 200, 80, .12);
+      animation: pop .28s cubic-bezier(.22, 1, .36, 1);
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #ffcc00 20%, #35f2e6 50%, #ffcc00 80%, transparent);
+      border-radius: 20px 20px 0 0;
+      animation: topGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes topGlow {
+
+      0%,
+      100% {
+        opacity: .7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .card::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .card::-webkit-scrollbar-thumb {
+      background: rgba(255, 200, 80, .3);
+      border-radius: 5px;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(.9) translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: none;
+        opacity: 1;
+      }
+    }
+
+    .photo {
+      background: linear-gradient(160deg, #2a0a0a 0%, #150404 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 240px;
+      border-radius: 20px 20px 0 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(180, 40, 20, .25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .photo img {
+      display: block;
+      max-width: 100%;
+      max-height: 58vh;
+      object-fit: contain;
+      border-radius: 4px;
+      filter: drop-shadow(0 4px 20px rgba(0, 0, 0, .5));
+      transition: opacity .25s ease, transform .3s cubic-bezier(.22,1,.36,1);
+    }
+    .photo img.slide-in-right { animation: slideInRight .3s cubic-bezier(.22,1,.36,1) both; }
+    .photo img.slide-in-left  { animation: slideInLeft  .3s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to   { opacity: 1; transform: none; }
+    }
+    /* ── Overlay arrow buttons on photo ── */
+    .photo-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+      transition: all .2s ease;
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .photo-arrow.visible { display: flex; }
+    .photo-arrow:hover {
+      background: rgba(255,200,80,.28);
+      box-shadow: 0 6px 28px rgba(0,0,0,.6), 0 0 18px rgba(255,200,80,.3), inset 0 1px 0 rgba(255,255,255,.15);
+      transform: translateY(-50%) scale(1.1);
+    }
+    .photo-arrow:active { transform: translateY(-50%) scale(.95); }
+    .photo-arrow.left  { left: 14px; }
+    .photo-arrow.right { right: 14px; }
+    /* photo indicator dots */
+    .photo-dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 4;
+    }
+    .photo-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.3);
+      transition: all .2s ease;
+      cursor: pointer;
+    }
+    .photo-dot.active {
+      background: var(--gold);
+      box-shadow: 0 0 8px rgba(255,200,80,.7);
+      transform: scale(1.2);
+    }
+    /* ── Add-milestone inline form ── */
+    .add-ev-section {
+      margin-top: 16px;
+      border-top: 1px solid rgba(255,200,80,.12);
+      padding-top: 16px;
+    }
+    .add-ev-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font: 600 13px var(--font);
+      color: rgba(255,200,80,.75);
+      cursor: pointer;
+      background: none;
+      border: 1px dashed rgba(255,200,80,.25);
+      border-radius: 10px;
+      padding: 8px 14px;
+      width: 100%;
+      text-align: left;
+      transition: all .2s ease;
+    }
+    .add-ev-toggle:hover {
+      background: rgba(255,200,80,.08);
+      border-color: rgba(255,200,80,.45);
+      color: var(--gold);
+    }
+    .add-ev-form {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 16px;
+      background: rgba(255,200,80,.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,200,80,.12);
+    }
+    .add-ev-form.open { display: flex; animation: fadeUp .25s ease-out; }
+    .add-ev-form input,
+    .add-ev-form textarea {
+      width: 100%;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,200,80,.2);
+      border-radius: 9px;
+      color: var(--panel-ink);
+      font: 14px var(--font);
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      resize: vertical;
+    }
+    .add-ev-form input:focus,
+    .add-ev-form textarea:focus {
+      border-color: rgba(255,200,80,.55);
+      box-shadow: 0 0 0 3px rgba(255,200,80,.12);
+    }
+    .add-ev-form input::placeholder,
+    .add-ev-form textarea::placeholder { color: rgba(255,220,180,.3); }
+    .add-ev-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(255,170,80,.7);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .add-ev-img-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .add-ev-img-preview {
+      width: 60px;
+      height: 48px;
+      border-radius: 7px;
+      object-fit: cover;
+      border: 1px solid rgba(255,200,80,.2);
+      display: none;
+    }
+    .add-ev-img-preview.show { display: block; }
+    .add-ev-pick-btn {
+      font: 600 12px var(--font);
+      border-radius: 8px;
+      padding: 7px 13px;
+      cursor: pointer;
+      border: 1px solid rgba(255,200,80,.3);
+      background: rgba(255,200,80,.07);
+      color: rgba(255,220,160,.8);
+      transition: all .18s ease;
+      white-space: nowrap;
+    }
+    .add-ev-pick-btn:hover {
+      background: rgba(255,200,80,.16);
+      border-color: rgba(255,200,80,.5);
+    }
+    .add-ev-actions { display: flex; gap: 8px; }
+    .add-ev-save {
+      font: 600 13px var(--font);
+      border-radius: 9px;
+      padding: 8px 18px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c0302c 0%, #8c1818 100%);
+      border: 1px solid rgba(255,100,80,.35);
+      color: #fff;
+      box-shadow: 0 3px 14px rgba(180,30,20,.35);
+      transition: all .18s ease;
+    }
+    .add-ev-save:hover {
+      background: linear-gradient(135deg, #d44040 0%, #aa2020 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px rgba(200,40,30,.45);
+    }
+    .add-ev-cancel {
+      font: 600 13px var(--font);
+      border-radius: 9px;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.6);
+      transition: all .18s ease;
+    }
+    .add-ev-cancel:hover { background: rgba(255,255,255,.1); }
+
+    .empty {
+      padding: 44px 28px;
+      text-align: center;
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: rgba(255, 230, 180, .65);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .empty::before {
+      content: '🖼️';
+      font-size: 44px;
+      filter: grayscale(.5) opacity(.6);
+    }
+
+    .body {
+      padding: 20px 24px 22px;
+    }
+
+    .body h2 {
+      margin: 0 0 6px;
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 700;
+      color: #ffe8b0;
+      line-height: 1.25;
+    }
+
+    .body p {
+      margin: 0 0 14px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: rgba(255, 220, 170, .8);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .row button {
+      font: 600 13.5px var(--font);
+      border-radius: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 200, 80, .35);
+      background: rgba(255, 200, 80, .08);
+      color: rgba(255, 220, 160, .85);
+      transition: all .2s ease;
+    }
+
+    .row button:hover {
+      background: rgba(255, 200, 80, .18);
+      border-color: rgba(255, 200, 80, .55);
+      transform: translateY(-1px);
+    }
+
+    .row button.primary {
+      background: linear-gradient(135deg, #c0302c 0%, #8c1818 100%);
+      border-color: rgba(255, 100, 80, .4);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(180, 30, 20, .4);
+    }
+
+    .row button.primary:hover {
+      background: linear-gradient(135deg, #d44040 0%, #aa2020 100%);
+      box-shadow: 0 6px 22px rgba(200, 40, 30, .5);
+    }
+
+    .row .spacer {
+      flex: 1;
+    }
+
+    .meta {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(255, 170, 80, .75);
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1.5px;
+      background: rgba(255, 160, 60, .5);
+    }
+
+    .when {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .when::before {
+      content: '📅';
+      font-size: 14px;
+    }
+
+    .pager {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+
+    .pager.on {
+      display: flex;
+    }
+
+    .pager button {
+      font: 600 13px var(--font);
+      border-radius: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 200, 80, .3);
+      background: rgba(255, 200, 80, .08);
+      color: rgba(255, 220, 160, .85);
+      transition: all .18s ease;
+    }
+
+    .pager button:hover {
+      background: rgba(255, 200, 80, .2);
+    }
+
+    #m-count {
+      color: rgba(255, 200, 100, .6);
+      font-size: 13px;
+    }
+
+    .note {
+      font-size: 12px;
+      margin-top: 10px;
+      opacity: .65;
+      min-height: 1em;
+      color: var(--cyan);
+    }
+
+    /* ══════════════════ INTRO SCREEN ══════════════════ */
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 50% 50%, #3a0c0b 0%, #0e0202 100%);
+      transition: opacity .8s ease, visibility .8s ease;
+    }
+
+    #intro.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-flag {
+      font-size: 72px;
+      animation: introBounce 1.5s ease-out both;
+      filter: drop-shadow(0 0 30px rgba(255, 220, 0, .6));
+      margin-bottom: 20px;
+    }
+
+    @keyframes introBounce {
+      0% {
+        transform: scale(0.3) rotate(-15deg);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.15) rotate(3deg);
+        opacity: 1;
+      }
+
+      80% {
+        transform: scale(.95) rotate(-1deg);
+      }
+
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .intro-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 6vw, 56px);
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(135deg, #ffe566 0%, #ffb700 50%, #fff3a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 24px rgba(255, 190, 0, .5));
+      animation: fadeUp .8s .4s ease-out both;
+      padding: 0 20px;
+    }
+
+    .intro-sub {
+      font-size: clamp(13px, 2.5vw, 17px);
+      color: rgba(255, 230, 180, .7);
+      margin-top: 12px;
+      text-align: center;
+      animation: fadeUp .8s .65s ease-out both;
+      padding: 0 30px;
+    }
+
+    .intro-line {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 18px auto;
+      animation: fadeUp .8s .5s ease-out both;
+    }
+
+    .intro-btn {
+      margin-top: 32px;
+      font: 700 16px var(--font);
+      color: #fff;
+      background: linear-gradient(135deg, #c0302c 0%, #8c1818 100%);
+      border: 1px solid rgba(255, 120, 80, .4);
+      border-radius: 999px;
+      padding: 14px 40px;
+      cursor: pointer;
+      animation: fadeUp .8s .9s ease-out both;
+      box-shadow: 0 8px 30px rgba(180, 30, 20, .5), 0 0 0 0 rgba(255, 80, 60, .4);
+      transition: all .25s ease;
+      letter-spacing: .05em;
+    }
+
+    .intro-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(200, 40, 30, .6), 0 0 40px rgba(255, 80, 60, .2);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ══════════════════ BOTTOM BAR ══════════════════ */
+    #bottom-bar {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(20, 5, 5, .7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 180, 80, .18);
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 12px;
+      color: rgba(255, 220, 160, .6);
+      z-index: 6;
+      pointer-events: none;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+
+    #bottom-bar span {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* ══════════════════ RESPONSIVE ══════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+
+      .card,
+      #tl,
+      #intro-btn {
+        animation: none;
+      }
+
+      @keyframes twinkle {
+        from {
+          opacity: .8;
+        }
+
+        to {
+          opacity: .8;
+        }
+      }
+    }
+
+    @media (max-width: 560px) {
+      header {
+        padding: 12px 14px;
+        max-width: calc(100% - 120px);
+      }
+
+      .header-glass {
+        padding: 14px 16px 12px;
+      }
+
+      h1 {
+        font-size: clamp(18px, 5.5vw, 28px);
+      }
+
+      .hint-line {
+        font-size: 11.5px;
+      }
+
+      #tl-toggle {
+        right: 10px;
+        padding: 9px 14px;
+        font-size: 12.5px;
+      }
+
+      #bottom-bar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Stars background -->
+  <div id="stars-bg" aria-hidden="true"></div>
+  <!-- Globe glow ring -->
+  <div id="glow-ring" aria-hidden="true"></div>
+
+  <!-- Intro screen -->
+  <div id="intro" aria-label="Màn hình chào mừng">
+    <div class="intro-flag">🇻🇳</div>
+    <h2 class="intro-title">TỰ HÀO VIỆT NAM</h2>
+    <div class="intro-line"></div>
+    <p class="intro-sub">Hành trình tìm đường cứu nước của Chủ tịch Hồ Chí Minh<br>qua bản đồ Trái Đất 3D tương tác</p>
+    <button class="intro-btn" id="intro-btn" type="button">✨ Khám phá ngay</button>
+  </div>
+
+  <canvas id="stage" aria-label="Trái Đất 3D. Kéo để xoay, nhấp vào chấm xanh ngọc để xem ảnh."></canvas>
+
+  <header>
+    <div class="header-glass">
+      <div class="flag-badge"><span class="star-icon">⭐</span>Hồ Chí Minh – Vĩ nhân thế kỷ XX</div>
+      <h1 data-text="TỰ HÀO VIỆT NAM">TỰ HÀO VIỆT NAM</h1>
+      <p class="subtitle">Hành trình tìm đường cứu nước</p>
+      <div class="hint-line"><span class="icon">👆</span> Kéo để xoay · Chụm 2 ngón tay hoặc nút <b>+/-</b> để phóng to</div>
+      <div class="hint-line"><span class="icon">📍</span> Nhấp vào <b>chấm xanh ngọc</b> để xem hình ảnh</div>
+    </div>
+  </header>
+
+  <button id="tl-toggle" type="button" aria-expanded="false" aria-controls="tl">Hành trình</button>
+  <button id="add-marker-btn" type="button" title="Thêm mốc địa điểm mới">📌 Thêm mốc</button>
+  <button id="qr-btn" type="button" title="Tạo mã QR để chia sẻ">📱 Mã QR</button>
+  <div id="add-hint" role="status">📍 Nhấp vào bản đồ để đặt mốc mới · Nhấn Esc để hủy</div>
+
+  <!-- Nút phóng to / thu nhỏ trên màn hình (đặc biệt tiện lợi trên điện thoại) -->
+  <div id="zoom-controls" aria-label="Điều khiển phóng to thu nhỏ">
+    <button id="zoom-in" class="zoom-btn" type="button" title="Phóng to" aria-label="Phóng to">＋</button>
+    <button id="zoom-reset" class="zoom-btn reset-btn" type="button" title="Về Việt Nam" aria-label="Về Việt Nam">🇻🇳</button>
+    <button id="zoom-out" class="zoom-btn" type="button" title="Thu nhỏ" aria-label="Thu nhỏ">－</button>
+  </div>
+
+  <aside id="tl" aria-label="Dòng thời gian hành trình"></aside>
+
+  <!-- QR Code Modal -->
+  <div id="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+    <div class="custom-card" style="max-width:480px;text-align:center;">
+      <div class="custom-card-body" style="padding:28px 24px;">
+        <h3 id="qr-modal-title" style="margin:0 0 8px;font-size:20px;">📱 Quét mã QR để xem</h3>
+        <p style="font-size:13px;color:rgba(255,220,180,.75);margin:0 0 16px;">Dùng camera điện thoại hoặc Zalo quét để trải nghiệm</p>
+        
+        <div style="background:#fff;padding:14px;border-radius:14px;display:inline-block;box-shadow:0 8px 24px rgba(0,0,0,.4);margin-bottom:14px;">
+          <img id="qr-img" alt="QR Code" style="display:block;width:210px;height:210px;border-radius:6px;object-fit:contain;">
+        </div>
+
+        <div class="form-group" style="text-align:left;margin-bottom:12px;">
+          <label style="font-size:11px;">Đường dẫn (URL)</label>
+          <div style="display:flex;gap:6px;">
+            <input id="qr-url-input" type="text" style="font-size:12.5px;padding:8px 10px;" placeholder="Nhập hoặc dán link trang web...">
+            <button id="qr-copy-btn" class="btn-primary" style="padding:8px 14px;white-space:nowrap;font-size:12px;">📋 Sao chép</button>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:rgba(255,200,100,.75);text-align:left;background:rgba(255,255,255,.05);padding:10px 14px;border-radius:10px;margin-bottom:16px;line-height:1.5;">
+          💡 <b>Gợi ý:</b> Nếu bạn đưa thư mục lên <b>Netlify Drop</b>, <b>Vercel</b> hoặc <b>GitHub Pages</b>, hãy dán link vào ô trên để tự động tạo mã QR tương ứng!
+        </div>
+
+        <div class="form-actions" style="justify-content:center;">
+          <a id="qr-download-btn" href="#" target="_blank" class="btn-primary" style="text-decoration:none;display:inline-block;padding:9px 18px;font-size:13px;border-radius:10px;">💾 Tải ảnh QR</a>
+          <button id="qr-close-btn" type="button" style="padding:9px 18px;font-size:13px;">✕ Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Marker Modal -->
+  <div id="custom-modal" role="dialog" aria-modal="true" aria-labelledby="cm-title">
+    <div class="custom-card">
+      <div class="custom-card-body" id="cm-body">
+        <!-- content injected by JS -->
+      </div>
+    </div>
+  </div>
+  <input type="file" id="ms-file" accept="image/*" hidden>
+
+  <!-- Bottom hint bar -->
+  <div id="bottom-bar" aria-hidden="true">
+    🌏 Trái Đất 3D · <span>20 địa danh</span> · <span>5 thời kỳ lịch sử</span>
+  </div>
+
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="card">
+      <!-- Photo area with overlay arrows -->
+      <div class="photo" id="m-photo">
+        <button class="photo-arrow left" id="m-arrow-prev" type="button" aria-label="Mốc trước">&#8592;</button>
+        <button class="photo-arrow right" id="m-arrow-next" type="button" aria-label="Mốc sau">&#8594;</button>
+        <div class="photo-dots" id="m-dots"></div>
+      </div>
+      <div class="body">
+        <p class="meta" id="m-per"></p>
+        <h2 id="m-title"></h2>
+        <p class="when" id="m-when"></p>
+        <p id="m-cap"></p>
+        <div class="row">
+          <button class="primary" id="m-pick" type="button">📷 Chọn ảnh của bạn</button>
+          <button id="m-clear" type="button">🗑 Xóa ảnh</button>
+          <span class="spacer"></span>
+          <button id="m-close" type="button">✕ Đóng</button>
+        </div>
+        <div class="note" id="m-note"></div>
+        <!-- Add new milestone inline -->
+        <div class="add-ev-section">
+          <button class="add-ev-toggle" id="m-add-toggle" type="button">➕ Thêm mốc thời gian &amp; hình ảnh mới</button>
+          <div class="add-ev-form" id="m-add-form">
+            <div>
+              <span class="add-ev-label">Thời gian / Tiêu đề</span>
+              <input id="m-new-when" type="text" placeholder="Ví dụ: Tháng 5-1930, Ngày 12-8-1945…">
+            </div>
+            <div>
+              <span class="add-ev-label">Nội dung sự kiện</span>
+              <textarea id="m-new-text" rows="3" placeholder="Mô tả sự kiện, dấu ấn lịch sử…"></textarea>
+            </div>
+            <div>
+              <span class="add-ev-label">Hình ảnh (tùy chọn)</span>
+              <div class="add-ev-img-row">
+                <img class="add-ev-img-preview" id="m-new-img-preview" alt="preview">
+                <button class="add-ev-pick-btn" id="m-new-pick-img" type="button">📷 Chọn ảnh</button>
+                <span id="m-new-img-name" style="font-size:12px;color:rgba(255,200,100,.5)"></span>
+              </div>
+            </div>
+            <div class="add-ev-actions">
+              <button class="add-ev-save" id="m-add-save" type="button">💾 Lưu mốc mới</button>
+              <button class="add-ev-cancel" id="m-add-cancel" type="button">Hủy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="m-new-img-file" accept="image/*" hidden>
+  <input type="file" id="file" accept="image/*" hidden>
+
+  <script>
+    /* =====================================================================
+       CẤU HÌNH
+       - PERIODS: các thời kỳ.
+       - MARKERS: các điểm trên Trái Đất (lat / lon = vĩ độ / kinh độ, z = độ phóng to khi chọn).
+       - EVENTS: các mốc thời gian; "place" là id của điểm. Nhiều mốc cùng một nơi
+         sẽ nằm chung một chấm tròn và lật qua lại bằng nút Trước / Sau.
+       - image: đường dẫn ảnh (ví dụ "anh/hue-1908.jpg") nếu bạn tự đặt trang này
+         cùng thư mục với ảnh. Để trống thì dùng nút "Chọn ảnh của bạn" trong cửa sổ ảnh.
+       ===================================================================== */
+    const PERIODS = [
+      { title: "Thời kỳ trước ngày 5-6-1911", sub: "Hình thành tư tưởng yêu nước và chí hướng tìm đường cứu nước" },
+      { title: "Từ giữa năm 1911 đến cuối năm 1920", sub: "Dần hình thành tư tưởng giải phóng dân tộc theo con đường cách mạng vô sản" },
+      { title: "Từ cuối năm 1920 đến đầu năm 1930", sub: "Hình thành những nội dung cơ bản tư tưởng về cách mạng Việt Nam" },
+      { title: "Từ đầu năm 1930 đến đầu năm 1941", sub: "Vượt qua thử thách, giữ vững đường lối" },
+      { title: "Từ đầu năm 1941 đến tháng 9-1969", sub: "Tư tưởng tiếp tục phát triển, hoàn thiện và soi đường cho cách mạng" }
+    ];
+
+    const MARKERS = [
+      { id: "hue", name: "Tòa Khâm sứ Trung Kỳ, Huế", lat: 16.4637, lon: 107.5909, z: 2.2 },
+      { id: "phanthiet", name: "Trường Dục Thanh, Phan Thiết", lat: 10.9289, lon: 108.1021, z: 2.2 },
+      { id: "nharong", name: "Bến Nhà Rồng, Sài Gòn", lat: 10.7682, lon: 106.7069, z: 2.2 },
+      { id: "usa", name: "Hoa Kỳ", lat: 40.7128, lon: -74.006, z: 1.4 },
+      { id: "uk", name: "Anh", lat: 51.5074, lon: -0.1278, z: 1.8 },
+      { id: "paris", name: "Thủ đô Pari, Pháp", lat: 48.8566, lon: 2.3522, z: 2.2 },
+      { id: "versailles", name: "Vécxây (Versailles), Pháp", lat: 48.8049, lon: 2.1204, z: 2.6 },
+      { id: "tours", name: "Thành phố Tua (Tours), Pháp", lat: 47.3941, lon: 0.6848, z: 2.2 },
+      { id: "quangchau", name: "Quảng Châu, Quảng Đông, Trung Quốc", lat: 23.1291, lon: 113.2644, z: 2.2 },
+      { id: "hongkong", name: "Cửu Long, Hương Cảng (Hong Kong)", lat: 22.3167, lon: 114.1833, z: 2.4 },
+      { id: "moscow", name: "Mátxcơva (Moscow), Liên Xô", lat: 55.7558, lon: 37.6173, z: 1.8 },
+      { id: "tancuong", name: "Tân Cương, Trung Quốc", lat: 43.8256, lon: 87.6168, z: 1.6 },
+      { id: "dienan", name: "Diên An, Trung Quốc", lat: 36.5853, lon: 109.4898, z: 1.8 },
+      { id: "quelam", name: "Quế Lâm, Trung Quốc", lat: 25.2736, lon: 110.18, z: 2.0 },
+      { id: "namquang", name: "Làng Nậm Quang, Tĩnh Tây, Quảng Tây", lat: 23.07, lon: 106.38, z: 2.6 },
+      { id: "pacbo", name: "Pác Bó, Hà Quảng, Cao Bằng", lat: 22.9906, lon: 106.0489, z: 3.4 },
+      { id: "nguyenbinh", name: "Rừng Trần Hưng Đạo, Nguyên Bình, Cao Bằng", lat: 22.62, lon: 105.97, z: 3.4 },
+      { id: "tantrao", name: "Tân Trào, Sơn Dương, Tuyên Quang", lat: 21.72, lon: 105.47, z: 3.2 },
+      { id: "dienbien", name: "Điện Biên Phủ", lat: 21.3856, lon: 103.0169, z: 3.0 },
+      { id: "hanoi", name: "Thủ đô Hà Nội", lat: 21.0369, lon: 105.8346, z: 3.4, big: true }
+    ];
+
+    const EVENTS = [
+      /* Thời kỳ 1 */
+      { p: 0, place: "hue", when: "Năm 1908", text: "Tại Tòa Khâm sứ Trung Kỳ, Nguyễn Tất Thành tham gia thông dịch cho đoàn nông dân đến biểu tình chống thuế. Đây là lần đầu tiên Người trực tiếp tham gia hoạt động yêu nước, góp phần đấu tranh chống lại ách cai trị của thực dân Pháp.", image: "art/1908.jpg" },
+      { p: 0, place: "phanthiet", when: "Năm 1910", text: "Tại Trường Dục Thanh, thị xã Phan Thiết, Nguyễn Tất Thành dạy học và truyền thụ tinh thần yêu nước, ý chí tự cường dân tộc cho học sinh. Đây là nơi Người hun đúc tinh thần căm thù giặc trước khi tìm đường cứu nước.", image: "art/1910.jpg" },
+      { p: 0, place: "nharong", when: "Ngày 5-6-1911", text: "Tại Bến Nhà Rồng, Sài Gòn, Nguyễn Tất Thành lên tàu Amiral Latouche Tréville, bắt đầu hành trình ra nước ngoài tìm đường cứu nước, cứu dân. Sự kiện lịch sử này mở ra một trang mới trong cuộc đời hoạt động cách mạng của Người và cho dân tộc Việt Nam.", image: "art/5-6-1911.jpg" },
+      /* Thời kỳ 2 */
+      { p: 1, place: "usa", when: "Từ năm 1911 đến năm 1917", text: "Tại Hoa Kỳ, Nguyễn Tất Thành chứng kiến sự đối xử bất công với người da đen và lao động nghèo. Người nhận thức sâu sắc rằng chủ nghĩa đế quốc, bọn thực dân ở đâu cũng là kẻ thù của nhân dân lao động.", image: "art/1911 đến năm 1917.jpg" },
+      { p: 1, place: "uk", when: "Từ năm 1911 đến năm 1917", text: "Tại Anh Quốc, Nguyễn Tất Thành sống và làm việc tại London, làm phụ bếp trong khách sạn. Người quan sát cuộc sống lao khổ của tầng lớp cần lao Anh, tiếp xúc với phong trào công nhân và các tư tưởng dân chủ tiến bộ.", image: "art/1911 đến năm 1917.jpg" },
+      { p: 1, place: "paris", when: "Năm 1917", text: "Trở lại thủ đô Pari, Nguyễn Tất Thành tham gia phong trào công nhân Pháp đấu tranh chống chủ nghĩa thực dân. Người hoà mình vào các hoạt động cách mạng, tiếp xúc với nhiều trí thức và nhà hoạt động xã hội tiến bộ.", image: "art/Năm 1917.png" },
+      { p: 1, place: "paris", when: "Năm 1919", text: "Tại Pari, Nguyễn Ái Quốc gia nhập Đảng Xã hội của giai cấp công nhân Pháp, bước đầu tiếp cận con đường cách mạng vô sản. Người tích cực hoạt động trong tổ chức Đảng, đóng góp vào các cuộc đấu tranh đòi quyền lợi cho nhân dân thuộc địa.", image: "art/6-v1919.jpg" },
+      { p: 1, place: "versailles", when: "Ngày 18-6-1919", text: "Tại Hội nghị Vécxây, Nguyễn Ái Quốc thay mặt những người Việt Nam yêu nước ở Pháp gửi bản “Yêu sách của nhân dân An Nam” đến Hội nghị Hòa bình, đòi các quyền tự do dân chủ cơ bản và quyền tự quyết cho nhân dân Việt Nam. Sự kiện này làm chấn động dư luận tiến bộ thế giới.", image: "art/18-6-1919.jpg" },
+      { p: 1, place: "versailles", when: "Tháng 6-1919 (Văn bản)", text: "Bản Yêu sách tám điểm của nhân dân An Nam (Revendications du peuple annamite) gửi Hội nghị Vécxây — văn kiện chính trị lịch sử đầu tiên của Nguyễn Ái Quốc gửi tới các đoàn đại biểu dự Hội nghị Hòa bình.", image: "art/_6-1919.jpg" },
+      { p: 1, place: "paris", when: "Tháng 7-1920", text: "Tại Pari, Nguyễn Ái Quốc đọc “Sơ thảo lần thứ nhất những luận cương về vấn đề dân tộc và vấn đề thuộc địa” của Lênin và xác định được phương hướng đấu tranh giải phóng dân tộc theo con đường cách mạng vô sản. Người xúc động đến rơi nước mắt khi tìm thấy lý luận cách mạng khoa học.", image: "art/7-1920.jpg" },
+      { p: 1, place: "paris", when: "Năm 1920 – 1923", text: "Tại ngôi nhà số 9, ngõ Compoint (Pari), nơi Nguyễn Ái Quốc sống và hoạt động trong những ngày đông giá rét, kiên cường viết báo Người cùng khổ và gieo mầm cách mạng giải phóng dân tộc.", image: "art/compoing.jpg" },
+      { p: 1, place: "tours", when: "Từ ngày 25 đến 30-12-1920", text: "Tại Thành phố Tua (Tours), Nguyễn Ái Quốc tham dự Đại hội lần thứ 18 của Đảng Xã hội Pháp. Người bỏ phiếu tán thành gia nhập Quốc tế Cộng sản (Đệ tam Quốc tế) và trở thành một trong những người sáng lập Đảng Cộng sản Pháp — mốc son đánh dấu sự chuyển biến về chất trong con đường cách mạng của Người.", image: "art/ngày 25 đến 30-12-1920.jpg" },
+      { p: 1, place: "tours", when: "Tháng 12-1920 (Toàn cảnh)", text: "Toàn cảnh Đại hội đại biểu toàn quốc lần thứ 18 Đảng Xã hội Pháp tại thành phố Tua (Tours), nơi Nguyễn Ái Quốc tham dự với tư cách đại biểu Đông Dương và trở thành người cộng sản Việt Nam đầu tiên.", image: "art/1920.jpg" },
+      /* Thời kỳ 3 */
+      { p: 2, place: "paris", when: "Năm 1921", text: "Tại Pari, Nguyễn Ái Quốc tham gia sáng lập Hội liên hiệp thuộc địa (Union Intercoloniale), tập hợp những người yêu nước từ các nước thuộc địa của Pháp. Tổ chức này trở thành diễn đàn quan trọng tố cáo tội ác thực dân và đoàn kết các phong trào giải phóng dân tộc.", image: "art/1921.jpg" },
+      { p: 2, place: "paris", when: "Năm 1922", text: "Tại Pari, Nguyễn Ái Quốc được bầu làm Trưởng Tiểu ban Nghiên cứu vấn đề dân tộc thuộc địa của Đảng Cộng sản Pháp và sáng lập tờ báo “Le Paria” (Người cùng khổ) — tiếng nói của các dân tộc thuộc địa đang đấu tranh chống lại ách thực dân.", image: "art/1922.jpg" },
+      { p: 2, place: "moscow", when: "Năm 1923", text: "Tại Mátxcơva (Moscow), Liên Xô, Nguyễn Ái Quốc đặt chân đến quê hương của Cách mạng Tháng Mười vĩ đại, làm việc tại Quốc tế Nông dân và chuẩn bị hành trang lý luận vững chắc cho phong trào cách mạng thuộc địa.", image: "art/1923.jpg" },
+      { p: 2, place: "moscow", when: "Từ 17-6 đến 8-7-1924", text: "Tại Mátxcơva (Moscow), Liên Xô, Nguyễn Ái Quốc tham dự và phát biểu tại Đại hội lần thứ 5 Quốc tế Cộng sản với tư cách là đại biểu của Bộ thuộc địa Đảng Cộng sản Pháp, khẳng định vai trò chiến lược của phong trào giải phóng dân tộc ở thuộc địa.", image: "art/17-6 8-7-1924.jpg" },
+      { p: 2, place: "paris", when: "Năm 1925", text: "Tại Pari, Nguyễn Ái Quốc xuất bản tác phẩm “Bản án chế độ thực dân Pháp” (Le Procès de la colonisation française) bằng tiếng Pháp. Tác phẩm tố cáo đanh thép tội ác của thực dân Pháp ở các xứ thuộc địa, trở thành tài liệu quan trọng trong phong trào giải phóng dân tộc.", image: "art/1925.jpg" },
+      { p: 2, place: "quangchau", when: "Tháng 6-1925", text: "Tại Quảng Châu, Nguyễn Ái Quốc sáng lập Hội Việt Nam Cách mạng Thanh niên (tổ chức tiền thân của Đảng Cộng sản Việt Nam) tại ngôi nhà số 13 đường Văn Minh. Người cũng ra tờ báo “Thanh niên” — cơ quan tuyên truyền cách mạng đầu tiên của Hội, mở đầu cho báo chí cách mạng Việt Nam.", image: "art/6-1925.jpg" },
+      { p: 2, place: "quangchau", when: "Năm 1927", text: "Tại Quảng Châu, Nguyễn Ái Quốc xuất bản tác phẩm “Đường cách mệnh” — cuốn sách giáo khoa cách mạng đầu tiên, tập hợp các bài giảng lý luận cách mạng cho cán bộ Việt Nam. Tác phẩm đặt nền móng tư tưởng cho Đảng Cộng sản Việt Nam sau này.", image: "art/1927.jpg" },
+      { p: 2, place: "hongkong", when: "Đầu năm 1930", text: "Tại Cửu Long, Hương Cảng (Hong Kong), Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản trong nước thành Đảng Cộng sản Việt Nam. Hội nghị thông qua Chánh cương vắn tắc, Sách lược vắn tắc — tức Cương lĩnh chính trị đầu tiên của Đảng, đặt nền tảng cho cách mạng giải phóng dân tộc Việt Nam.", image: "art/1930.jpg" },
+      /* Thời kỳ 4 */
+      { p: 3, place: "moscow", when: "Năm 1934", text: "Tại Mátxcơva (Moscow), Liên Xô, Nguyễn Ái Quốc trở lại và vào học Trường Quốc tế Lênin sau khi thoát khỏi nhà tù của thực dân Anh ở Hồng Kông. Người tiếp tục nghiên cứu lý luận Mác – Lênin và hoạt động trong Quốc tế Cộng sản, duy trì ngọn lửa cách mạng trong giai đoạn thử thách.", image: "art/1934.jpg" },
+      { p: 3, place: "tancuong", when: "Tháng 10-1938", text: "Tại Tân Cương, Nguyễn Ái Quốc rời Liên Xô, bắt đầu hành trình dài qua nhiều tỉnh Trung Quốc để tìm đường về nước. Vượt qua vùng Tân Cương rộng lớn phía Tây Trung Quốc, Người vượt qua vô số gian khổ và hiểm nguy để tiến dần về Tổ quốc.", image: "" },
+      { p: 3, place: "dienan", when: "Tháng 10-1938", text: "Tại Diên An — căn cứ địa cách mạng của Đảng Cộng sản Trung Quốc, Nguyễn Ái Quốc tranh thủ tìm hiểu kinh nghiệm xây dựng căn cứ kháng chiến của cách mạng Trung Quốc để vận dụng vào thực tiễn Việt Nam, tiếp tục lộ trình trở về nước.", image: "" },
+      { p: 3, place: "quelam", when: "Tháng 10-1938", text: "Tại Quế Lâm, Nguyễn Ái Quốc liên lạc với các cơ sở cách mạng của Đảng Cộng sản Đông Dương, nắm tình hình trong nước và chuẩn bị các điều kiện cần thiết để trực tiếp lãnh đạo phong trào cách mạng Việt Nam.", image: "" },
+      { p: 3, place: "namquang", when: "Tháng 12-1940", text: "Tại làng Nậm Quang, huyện Tĩnh Tây, tỉnh Quảng Tây (khu vực giáp biên giới Việt Nam – Trung Quốc), Nguyễn Ái Quốc về liên lạc trực tiếp với Trung ương Đảng Cộng sản Đông Dương, chuẩn bị mọi mặt để trở về Tổ quốc sau 30 năm xa cách.", image: "art/12-1940.jpg" },
+      { p: 3, place: "pacbo", when: "Ngày 28-1-1941", text: "Sau 30 năm bôn ba hải ngoại, Nguyễn Ái Quốc vượt qua cột mốc 108 biên giới Việt – Trung tại Pác Bó, đặt chân trở về Tổ quốc. Đây là thời khắc xúc động và có ý nghĩa lịch sử trọng đại, mở ra giai đoạn trực tiếp lãnh đạo cách mạng trong nước.", image: "art/28-1-1941.jpg" },
+      /* Thời kỳ 5 */
+      { p: 4, place: "pacbo", when: "Tháng 5-1941", text: "Tại lán Khuổi Nậm, Pác Bó, Hồ Chí Minh chủ trì Hội nghị lần thứ 8 Ban Chấp hành Trung ương Đảng, quyết định đặt nhiệm vụ giải phóng dân tộc lên hàng đầu. Hội nghị thành lập Mặt trận Việt Minh và chuẩn bị lực lượng cho cuộc khởi nghĩa vũ trang giành chính quyền.", image: "art/5-1941.jpg" },
+      { p: 4, place: "pacbo", when: "Ngày 19-5-1941", text: "Tại hang Cóc Bó bên suối Lênin, Pác Bó, Cao Bằng, Hồ Chí Minh sáng lập Mặt trận Việt Minh (Việt Nam Độc lập Đồng minh Hội), tổ chức tập hợp toàn dân tộc đấu tranh giành độc lập. Đây cũng là ngày kỷ niệm sinh nhật lần thứ 51 của Bác.", image: "art/5-1941.jpg" },
+      { p: 4, place: "nguyenbinh", when: "Ngày 22-12-1944", text: "Tại khu rừng Trần Hưng Đạo, huyện Nguyên Bình, tỉnh Cao Bằng, Hồ Chí Minh sáng lập Việt Nam Tuyên truyền Giải phóng quân — tiền thân của Quân đội Nhân dân Việt Nam. Đội quân gồm 34 chiến sĩ do đồng chí Võ Nguyên Giáp chỉ huy, mở đầu trang sử vẻ vang của quân đội cách mạng Việt Nam.", image: "art/22-12-1944.jpg" },
+      { p: 4, place: "tantrao", when: "Ngày 18-8-1945", text: "Tại Đình Tân Trào, căn cứ địa Việt Bắc, Hồ Chí Minh ra Lời kêu gọi Tổng khởi nghĩa giành chính quyền, phát động toàn dân đồng loạt nổi dậy. Tiếng gọi của Bác như sấm rền, thúc đẩy cả dân tộc vùng lên trong Cách mạng Tháng Tám lịch sử.", image: "art/18-8-1945.jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 2-9-1945", text: "Tại Quảng trường Ba Đình, Hà Nội, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập trước hàng chục vạn đồng bào, khai sinh nước Việt Nam Dân chủ Cộng hoà — Nhà nước dân chủ nhân dân đầu tiên ở Đông Nam Á. Câu nói bất hủ “Nước Việt Nam có quyền hưởng tự do và độc lập...” vang lên trước toàn thế giới.", image: "art/2-9-1945.jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 19-12-1946", text: "Tại ngôi nhà của cụ Nguyễn Văn Dương, làng lụa Vạn Phúc, Hà Đông (nay thuộc Hà Nội), Chủ tịch Hồ Chí Minh ra Lời kêu gọi toàn quốc kháng chiến chống thực dân Pháp xâm lược: “Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ”.", image: "art/19-12-1946.jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 19-12-1946 (Bút tích)", text: "Bản thảo Lời kêu gọi Toàn quốc kháng chiến do Chủ tịch Hồ Chí Minh tự tay soạn thảo tại làng Vạn Phúc, Hà Đông — bảo vật quốc gia đúc kết ý chí quật cường của toàn dân tộc.", image: "art/19-12-1946(2).jpg" },
+      { p: 4, place: "tantrao", when: "Năm 1954", text: "Từ căn cứ địa Việt Bắc, Chủ tịch Hồ Chí Minh cùng Trung ương Đảng lãnh đạo cuộc kháng chiến chống thực dân Pháp đi đến thắng lợi hoàn toàn. Chín năm kháng chiến gian khổ kết thúc bằng chiến thắng Điện Biên Phủ “lừng lẫy năm châu, chấn động địa cầu”.", image: "art/1954.jpg" },
+      { p: 4, place: "dienbien", when: "Năm 1954", text: "Dưới sự lãnh đạo của Chủ tịch Hồ Chí Minh và Đại tướng Võ Nguyên Giáp, quân và dân ta đập tan tập đoàn cứ điểm Điện Biên Phủ — pháo đài được thực dân Pháp tự hào là “bất khả xâm phạm”. Chiến thắng ngày 7-5-1954 đặt dấu chấm hết cho ách thống trị thực dân Pháp ở Đông Dương.", image: "art/1954.jpg" },
+      { p: 4, place: "hanoi", when: "Từ năm 1954 đến năm 1969", text: "Tại Khu di tích Phủ Chủ tịch, Hà Nội, Chủ tịch Hồ Chí Minh lãnh đạo nhân dân miền Bắc xây dựng chủ nghĩa xã hội và chỉ đạo cuộc đấu tranh giải phóng miền Nam, thống nhất đất nước. Người sống giản dị trong ngôi nhà sàn thanh bạch, suốt đời vì nước vì dân.", image: "art/1954-1969.jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 17-7-1966", text: "Tại Thủ đô Hà Nội, Chủ tịch Hồ Chí Minh ra Lời kêu gọi đồng bào và chiến sĩ cả nước kiên quyết chống Mỹ cứu nước, khẳng định chân lý bất diệt: “Không có gì quý hơn độc lập, tự do”. Lời hiệu triệu sắt đá này trở thành lý tưởng sống và chiến đấu của cả dân tộc trong cuộc kháng chiến chống Mỹ.", image: "art/17-7-1966.jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 17-7-1966 (Phát thanh)", text: "Chủ tịch Hồ Chí Minh đọc Lời kêu gọi chống Mỹ cứu nước qua Đài Tiếng nói Việt Nam (17-7-1966), hiệu triệu toàn quân, toàn dân triệu người như một vượt qua gian khổ, quyết chiến quyết thắng.", image: "art/17-7-1966(2).jpg" },
+      { p: 4, place: "hanoi", when: "Ngày 2-9-1969", text: "Tại Thủ đô Hà Nội, Chủ tịch Hồ Chí Minh vĩnh biệt cõi đời, để lại bản Di chúc lịch sử — văn kiện thể hiện tầm nhìn xa trông rộng và tình thương yêu vô hạn đối với đồng bào, chiến sĩ và nhân loại tiến bộ. Người ra đi khi đất nước chưa thống nhất, nhưng niềm tin thắng lợi và ý chí kiên cường Người để lại đã soi đường dân tộc đến ngày toàn thắng.", image: "art/2-9-1969.jpg" }
+    ];
+    EVENTS.forEach(function (e, i) { e.k = "e" + i; });
+
+    /* Bản đồ đất liền 720x360 (1 bit / điểm), dùng để rải các chấm lên lục địa */
+    const LAND_B64 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////gAAAAAAH//////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHH//////4AAAAP////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////////5//AfP///////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////8/////////////8//+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPx///////+D/////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////////////////8AAAAAAAAAAACEAAAAAAB//wAAAAAAAAAAAAB/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//+/////8f////////////////4AAAAAAAAAIf///gAAAAAH8AAAAAAAAAAAAAP//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////////wAf///////////////AAAAAAAAAP////8AAAAAAAAAAAAAAAAAAAAAA//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAP//////4AA///////////////+AAAAAAAAAH//8CAAAAAAAAAAAAAAAAAAAAAAA//zwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4B/4+D/9////AB////////////////4AAAAAAAAAD///wAAAAAAAAAAAAAAAAAAAAAAAAH3/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPgB/8/g/z///8H/////////////////4AAAAAAAAAAP/x+AAAAAAAAAAAAAAAAAAAAAAAAAf/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQ/4AACF+AH///gAf////////////////4AAAAAAAAAAB/h/wAAAAAAAAAAAAAAAAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/wEAAAAD8AD//4gAf////////////////8AAAAAAAAAAH+AIAAAAAAAAAAAAAAAAAAAAAAAAAB/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/wAOAAD3/4////gAH/////////////////AAAAAAAAAAAeAAAAAAAAAAAAAAAA/AAAAAAAAAAD/8/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/8f4fID/4/+f//gAAD////////////////4AAAAAAAAAAAAAAAAAAAAAAAAAAP/+AAAAAAAA/B////+AAAAAAAAfgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA//v+D/4I/+D/AAAAAAAP////////////4AAAAAAAAAAAAAAAAAAAAAAAAAf/8AAAAAAAA////////gAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///+APx+////wAAAAAAP////////////4AAAAAAAAAAAAAAAAAAAAAAAAH/8AAAAAAAA/////////AAAAAAAH//z/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/4AADz+f///4AAAAAAB////////////wAAAAAAAAAAAAAAAAAAAAAAAAH/AAAAAAAAB////////gAAAAAAAAf/gfAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/+A8AAAAAPwHwCAAAAAAAA////////////8AAAAAAAAAAAAAAAAAAAAAAAAf4AAAAAAAAD////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//gAAPAH8f+H4E/AAAAAAAf///////////wAAAAAAAAAAAAAAAAAAAAAAAB/gAAAAAAB////////////8A/wAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///AB/w/9/4fj+/8AAAAAAP///////////gAAAAAAAAAAAAAAAAAAAAAAAD/AAAAQAAB////////////+A//AAAH/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/z/8M/B///w///v8AAAAAAH//////////8AAAAAAAAAAAAAAAAAAAAAAAAP8AAAA/xgB////////////////AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//v//+/Af+cB////+AAAAAAH//////////0AAAAAAAAAAAAAAAAAAAAAAAA/4AAAA/xx8////////////////gAAP///AAAAAAAAAAwAAAAAAAAAAAAAAAAA//f////gH+eA/////xAAAAAP//////////4AAAAAAAAAAAAAAAAAAAAAAAAf8AAAB/j/////////////////+AgQn///gAAAAAAAAA+AAAAAADwAAAAAAAAAD/D////gBx/g//////gAAAACf/////////8AAAAAAAAAAAAAAAQIAAAAAAAf/AAAf/v//////////////////x//////4AIAAAAAAH4AAAAAB//wgAAAAAAABAH////wAB/w///////gAAAB/////////9+AAAAAAAAAAAAAAA//AAAAAAAB/wAAf/j////////////////////////////AAAAAAHAAAAAA/////4gAAACcEAA/////4R/4P//////4AAAD//////////8AAAAAAAAAAAAAA///4AAAAAAAAAAAP/z////////////////////////////wAACAAAAAAAAD///////gAf/+N8B/////w+fwAP/9///8AAAD//////////gAAAAAAAAAAAAAP///+AAAAAAAAA/wP/3////////////////////////////w+BD/8AAAAAAH///////8D/////+f////D/n+QP/AH//+AAAAZ////////8AAAAAAAAAAAAAB//////wAAAAAAAf8f/3///////////////////////////////x//8gAAAH////////////////8f//fAZH+8P/AP//gAAAAB////////gAAAAAAAAAAAAAP//////8AIAABgEP/w/5///////////////////////////////////+AAAP/////////////////gD/8A/f/8P+APH//AAAAP///////+AAAAAAAAAAAAAAf///////gH4AP///////////////////////////////////////////wAAAf/////////////////4//////8f/AfD//4AAAf//////gAAAAAAAAAAAAAAB////////4D8////////4////////////////////////////////////+AAAP///////////////////////////APD//8AAA//////+AAAAAAAAAAAAAAAD////////+Hw////////z////////////////////////////////////9+AAZ//////////////////////////8AAH///4AAf/////8AAAAAEAAAAAAAAAH////////+B/////////f//////////////////////////////////////gP//////////////////////////zwAAP///wAA//////wAAA8EPgAAAAAAAAf//////w/4//////////////////////////////////////////////v//5///////////////////////////sAAAf/w/gAAP/////AAAB///gAAAAAAAA///4P//8CD//////////////////////////////////////////////0f4AP//////////////////////////PgA///8fAAAH///+AAAAAH//4AAAAAAAB///gP//8If//////////////////////////////////////////////gP4AH//////////////////////////f4D////iAAAH///4AAAAA///wAAAAAAAD///gf//8f///////////////////////////////////////////////AA4AAi////////////////////////8f+g/n//wAAAH///4AAAAAD//gAAAAAAAH///h////v//////////////////////////////////////////////4AADwABP//////////////////////+B/PwAA//wAAAD///wAAAAAP/gAAAAAAAAf//8P///////////////////////////////////////////////////4AAD+A////////////////////////+AIAgAB/34AAAB///wAAAAAACAAAAAAAAB///wf///////////////////////////////////////////////////8AAAIA////////////////////////+AAeAQAf9wAAAAf/+AAAAAAAAAAAAAAAB////A////////////////////////////////////////////////////+AAAAD////////////////////////AAAwd/+A/AAAAAP/+AAAAAAAAAAAAAAAD////Af//////////////////////////////////////////////7///8CAAAAH///////////////////////+AAAAZ//gBAAAAAH//AAAAAAAAAAAAAAAH///+Af//////////////////////////////////////////////3///wAAAAAB///////////////////////+AAAAA//+AAAAAAH/+AAAAAAAAAAAAAAAH///+Af////////////////////////////////////////////weH//8AAAAAAB///////////////////////8AAAAA//+AAAAAAB/8AAAAAAAAAAAAAAAD////A/////////////////////////////////////////////AIf//4AAAAAAe////n8P////////////////4AAAAAf/+AIAAAAAA8AAAAAAAAAAAAAAAD////wP+D/////////////////////////////////////////+AB/+HAAAAAAAOP//+P8Ag///////////////4AAAAAf/+AcAAAAAAAAAAAAAAAAAAAAAAD////gEEH/////////////////////////////////////////4AD/ICAAAAAAAAB//8OAAAD//////////////4AAAAA///A+AAAAAAAAAAAAAAAAAAAAAAB////gD/////////////////////////////////////////8P+AP4AAAAAAAAAAAz//AAAAA///////////////AAAAD///x/AAAAAAAAAAAAAAAAAAAfAAB/j//AD///////////////////////////////////////gAAPAA/wAAAAAAAAAAABP8AAAAAP//////////////AAAAAf////gAAAAAAAAAAAAAAAAAAeAAAOD/8AA//////////////////////////////////////+AAAAAD/gAAAAAAAAAAAAPzwAAAAAP/////////////gAAAAP////wAAAAAAAAAAAAAAAAAA/4AAAF/4AE//////////////////////////////////////8AAAAAf/4AAAAAAAAAAAA/PAAAAAAP/////////////+AAAAP////4AAAAAAAAAAAAAAAAAA/wAAB9/4Af//////////////////////////////////////wAAAAAf/4AAAAAAAAAAAB+MAAAAAAD//////////////wAAAP////8AAAAAAAAAAAAAAAAAB/wAAD4/wA///////////////////////////////////////gAAAAB//4AAAAAAAAAAAPwAAAAAAAB//////////////8AAAP////4AAAAAAAAAAAAAAAAAA/gAAD8/wA//////////////////////////////////////+AAAAAB//4AAAAAAAAAAA/wAAAAAAAA///////////////wAAf/////AAAAAAAAAAAAAAAAAA/wAAD3+AA//////////////////////////////////////8AAAAAD//AAAAAAAAAAAPwAAAAAAAAA////////////////8B//////gAAAAAAAAAAAAAAAAO/4AABz+AA//////////////////////////////////////wAAAAAD//AAAAAAAAAAA8AAAAAAAAAAP///////////////8P///////AAAAAAAAAAAAAAAAfv8AABwgP3//////////////////////////////////////8AAAAAD//gAAAAAAAAAAgAAAAAAAAAHv///////////////8H///////AAAAAAAAAAAAAAAA/B/AAB/9////////////////////////////////////////8cMAAAB/4AAAAAAAAAAAAAAAAAAAAAHh///////////////8H///////wAAAAAAAAAAAAAAD/A/AAv///////////////////////////////////////////+EAAAB/4AAAAAAAAAAAAAAAAAAAAAHB///////////////8D///////4AAAAAAAAAAAAAAB/P/gH/////////////////////////////////////////////8AAAB/4AAAAAAAAAAAAAAAAAAAAABB///////////////+D///////4AAAAAAAAAAAAAAB+P/8P/////////////////////////////////////////////+AAAB/AAAAAAAAAAAAAAAAAAAAAAAwP///////////////D///////4AAAAAAAAAAAAAAB+H/8P/////////////////////////////////////////////+AAAA+AAAAAAAAAAAAAAAAAAAAAAAAP///////////////n///////8AAAAAAAAAAAAAADgf/4f/////////////////////////////////////////////eAAAA+AAAAAAAAAAAAAAAAAAAAAAAAH///////////////////////4AAAAAAAAAAAAAAAAH/5//////////////////////////////////////////////OAAAAQAAAAAAAAAAAAAAAAAAAAAAAAf//////////////////////hwAAAAAAAAAAAAAAAAP/3//////////////////////////////////////////////PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////////////////////DwAAAAAAAAAAAAAAAA+AP//////////////////////////////////////////////PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf///////////////////8PgD9AAAAAAAAAAAAAAAAQI///////////////////////////////////////////////PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+//////////////////jz4H/wAAAAAAAAAAAAAAAAP//////////////////////////////////////////////+PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+//////////////////P8Af/wAAAAAAAAAAAAAAAP///////////////////////////////////////////////+eQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////////wAP/4AAAAAAAAAAAAAAAH///////////////////////////////////////////////+MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHf//////////////////wAf/4AAAAAAAAAAAAAAAH///////////////////////////////////////////////8MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////7/8CAGwAAAAAAAAAAAAAAAAf/////////////////f////////////////////////////4OAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///////////////////+GANwAAAAAAAAAAAAAAAAP////////////3///8B////////////////////////////wfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////////3AAAAAAAAAAAAAAAAAAAH//////////n8D///wB////////////////////////////gJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////////////////gAAAAAAAAAAAAAAAAAAH//////////B+H//+AB///////////////////////////+AYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////////8AAAAAAAAAAAAAAAAAAAH////n/////D////8AB///////////////////////////8AYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////////+fAAAAAAAAAAAAAAAAAAAAH////l////+A+H//4Af///////////////////////////4AeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////////////////x8AAAAAAAAAAAAAAAAAAAAH////w////8AQB//8A////////////////////////////4AfIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////////////////BwAAAAAAAAAAAAAAAAAAPwH//8P8P///8AAA//+A////////////////////////////wA/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////4AAAAAAAAAAAAAAAAAAAB/////wn8H///4AAAf/+Af///////////////////////////AD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////////////////4AAAAAAAAAAAAAAAAAAAA////ABn+B///wAAAD/8AD/////////////////////////8cAH/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////8AAAAAAAAAAAAAAAAAAAA////ABz/A///wAeAB//AC/////////////////////////8AAHnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////+AAAAAAAAAAAAAAAAAAAB////gBg/4P//4D/AB//gAf////////////////////////wAAHiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////4AAAAAAAAAAAAAAAAAAAA///+AAgf8P/////wf//wAf////////////////////////wAADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////////gAAAAAAAAAAAAAAAAAAAA///wADwD/P//z//////4AP////////////////////////wAAHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////////////4AAAAAAAAAAAAAAAAAAAAA///gADwB/v/i///////4D//////////////////////j//gAAHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////wAAAAAAAAAAAAAAAAAAAAB///AADwAYn/B///////4B//////////////////////P/8AAADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////gAAAAAAAAAAAAAAAAAAAAB///AADwAOD+D///////wB/////////////////////+GD8AAADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////gAAAAAAAAAAAAAAAAAAAAD///gABAAeB/B///////gA/////////////////////wIH+AAAHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAB///AAAAf4A/j///////gA/////////////////////4AH/AAAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////////+AAAAAAAAAAAAAAAAAAAAAA//+AAAA/4A/g///////wA/////////////////////8QH/AAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////////////+AAAAAAAAAAAAAAAAAAAAAA//8AA4aHgAeAf//////8A//////////////////////+AfgAE/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////////////+AAAAAAAAAAAAAAAAAAAAAA7/wP//+DgAcAf//////+A///////////////////////A/gAP/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////////////+AAAAAAAAAAAAAAAAAAAAAAB4Af//8AAAOABh5////////////////////////////wAfgAP/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////////////+AAAAAAAAAAAAAAAAAAAAAAAwH///8AAABAAAM////////////////////////////AAfgB//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////8AAAAAAAAAAAAAAAAAAAAAAB/////8AAAB+ADx///////////////////////////+AAfgf/+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////8AAAAAAAAAAAAAAAAAAAAAAB/////8AAAAQAD5///////////////////////////+AA+B//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////gAAAAAAAAAAAAAAAAAAAAAAD/////4AAAAAAAB////////////////////////////gA4H/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////////AAAAAAAAAAAAAAAAAAAAAAAP/////8AAAAAAAD////////////////////////////gAAP/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////////////8AAAAAAAAAAAAAAAAAAAAAAA//////+AAAAAAAD////////////////////////////wAA/6QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////////////wAAAAAAAAAAAAAAAAAAAAAAB///////8AB8AAAH////////////////////////////wAAf4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////gAAAAAAAAAAAAAAAAAAAAAAB////////gD/AAAH////////////////////////////4AAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////AAAAAAAAAAAAAAAAAAAAAAAB////////gH/+AQP////////////////////////////8AAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAef//////////AAAAAAAAAAAAAAAAAAAAAAAD////////8D//5/P////////////////////////////8AAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAef//////////AAAAAAAAAAAAAAAAAAAAAAAD/////////n/////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOP//////////AAAAAAAAAAAAAAAAAAAAAAAD///////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPH///////wE/AAAAAAAAAAAAAAAAAAAAAAAD///////////////////3///////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADn/////4DwAPgAAAAAAAAAAAAAAAAAAAAAAH///////////////////h///////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3/////gAAAPgAAAAAAAAAAAAAAAAAAAAAAP///////////////////h///////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB7////+AAAAPgAAAAAAAAAAAAAAAAAAAAAD////////////////////g///////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH9////8AAAAPgAAAAAAAAAAAAAAAAAAAAAH///////////////5////wf//////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8f///8AAAAPwgAAAAAAAAAAAAAAAAAAAAH///////////////x////4H//////////////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+P///8AAAAHz4AAAAAAAAAAAAAAAAAAAAP///////////////w////+D9/////////////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOH///8AAAADyQAAAAAAAAAAAAAAAAAAAAf///////////////4f///+gS/////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHH///8AAAADwQAAAAAAAAAAAAAAAAAAAA////////////////4f///+wG/////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHh///4AAAABxgAAAAAAAAAAAAAAAAAAAA////////////////8P////wOB///////////////////+IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHg///4AAAAABgAAAAAAAAAAAAAAAAAAAB////////////////+P////geAAAP////////////////8cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwf//4AAAAABgAAAAAAAAAAAAAAAAAAAB////////////////+P//////AAAP////////////////wcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYP//4AAAAAAgAAAAAAAAAAAAAAAAAAAD/////////////////D//////8AAP////////////////g8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcH//4AAAAPgAAAAAAAAAAAAAAAAAAAAH/////////////////B//////8AAB///////////////+A4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYH//4AAAB/5AAAAAAAAAAAAAAAAAAAAH/////////////////g///////AAA///////////////8A4AAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAD//4AAAB3/gAAAAAAAAAAAAAAAAAAAP/////////////////w///////AAA///////3//////+gAQAAAAAAAAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAAAD//4AABDAfwAAAAAAAAAAAAAAAAAAAP/////////////////w//////+AAAf//////j//////wAAQAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAB//8AA/gAB+AAAAAAAAAAAAAAAAAAAf/////////////////4//////+AAAf/////AD////+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAD//8AB/gAB/gAAAAAAAAAAAAAAAAAAf/////////////////wf/////4AAAOf////gD////8GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAD//8AB/AAAfwAAAAAAAAAAAAAAAAAAH/////////////////wf/////4AAAAf///+AB////4HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAB//+AD+AAA/n+AAAAAAAAAAAAAAAAAH/////////////////4H/////wAAAAf///8AA////wPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAA///AD/AAAAD/AAAAAAAAAAAAAAAAAH/////////////////4H/////wAAAAf///4AAf///wfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAP//4/+AAAgd/3AAAAAAAAAAAAAAAAH/////////////////4D/////wAAAAf///gAAP///weAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////+AAB8f/ngAAAAAAAAAAAAAAAH/////////////////8B/////AAAAAP///AAAP///4IAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////8AAA8AwHgAAAAAAAAAAAAAAAH/////////////////+B////+AAAAAP//+AAAH///8AAAA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///8AAAAAAAAAAAAAAAAAAAAAAAH/////////////////+A////4AAAAAP//4AAAH///8AAAA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAP//////////////////Af///QAAAAAH//4AAAH///+AAAA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//4QAAAAAAAAAAAAAAAAAAAAAAH//////////////////Af//4AAAAAAH//wAAAP3///gAAB+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHD///AAAAAAAAAAAAAAAAAAAAAAP//////////////////gf//4AAAAAAH//AAAAGH///gAAB8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///wAAAAAAAAAAAAAAAAAAAAAP//////////////////wf//gAAAAAAD/+AAAAAH///wAAB8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAAAAAAAAAAAAAAA///////////////////4f/8AAAAAAAD/+AAAAAH///wAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//wAAAAAAAAAAAAAAAAAAAAAf//////////////////+P/wAAAAAAAB/+AAAAAD///wAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//wAAAAAAAAAAAAAAAAAAAAAP///////////////////P+gAAAAAAAB/+AAAAAD///4AAAfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/gAAAAAAAAAAAAAAAAAAAAAP////////////////////8AAAAAAAAB/+AAAAAB///4AAA9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/wAAAAAAAAAAAAAAAAAAAAAP////////////////////gAAAAAAAAB/8AAAAAB///4AAAYOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/wAAAyAAAAAAAAAAAAAAAAAP///////////////////4ABgAAAAAAA/8AAAAAD4f/4AAAIHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/gAAD2AAAAAAAAAAAAAAAAAH///////////////////4AHgAAAAAAA/8AAAAABwP/4AAAHnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfgAA/ngAAAAAAAAAAAAAAAAD///////////////////4B/gAAAAAAAf8AAAAABwP/gAABDvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPgAB///H+AAAAAAAAAAAAAAA///////////////////8f/gAAAAAAAP8AAAAADgP/AAADH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwAB////uAAAAAAAAAAAAAAA//////////////////////AAAAAAAAP8AAAAABgD+AAAGD2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4MD/f//4AAAAAAAAAAAAAAAf/////////////////////AAAAAAAAPyAAAAABgA4AAAMDyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+/H////+AAAAAAAAAAAAAAAP/////////////////////AAAAAAAAH7AAAAABwBwAAAcBjgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAH////////////////////+AAAAAAAAHngAAAADwAgAAAQAngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/x//////gAAAAAAAAAAAAAAH////////////////////+AAAAAAAADHgAAAAD4AAAAAgD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADx//////wAAAAAAAAAAAAAAD////////////////////8AAAAAAAABHwAAAAD4AAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw//////8AAAAAAAAAAAAAAB////////////////////8AAAAAAAAAHwAAAAAYAAAAAAHvwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////8AAAAAAAAAAAAAAA////////////////////4AAAAAAAAAHwAAAAAfAAAABgCegAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////+EAAAAAAAAAAAAAAP///////////////////4AAAAAAAAADwAAAAAPgAAADwAPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////gAAAAAAAAAAAAAD///4D//////////////wAAAAAAAAACAAAAAAPwAAAH4ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf///////4AAAAAAAAAAAAAB//+AD//////////////wAAAAAAAAAAAAAAD4PwAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf///////+AAAAAAAAAAAAAB/h4AD//////////////gAAAAAAAAAAAAAAD8H4AAA/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////AAAAAAAAAAAAAAIAAAB7/////////////AAAAAAAAAAAAAAAB+H4AAA/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////AAAAAAAAAAAAAAAAAAAB////////////+AAAAAAAAAAAAAAAA/n4AAB/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////////AAAAAAAAAAAAAAAAAAAAf///////////+AAAAAAAAAAAAAAAAPz4AAH/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////////AAAAAAAAAAAAAAAAAAAAf///////////8AAAAAAAAAAAAAAAAH78AA//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////gAAAAAAAAAAAAAAAAAAAf///////////wAAAAAAAAAAAAAAAAH/8AE//4AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////4AAAAAAAAAAAAAAAAAAAf///////////AAAAAAAAAAAAAAAAAB/eAH//wACHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////4AAAAAAAAAAAAAAAAAAA///////////+AAAAAAAAAAAAAAAAAB/mAP//4cGPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////////wAAAAAAAAAAAAAAAAAAA///////////8AAAAAAAAAAAAAAAAAA/4AP//8/8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////////gAAAAAAAAAAAAAAAAAAA///////////4AAAAAAAAAAAAAAAAAA/8Af//h/4HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////////+AAAAAAAAAAAAAAAAAAA///////////wAAAAAAAAAAAAAAAAAAf4AP//hgAEAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////+4AAAAAAAAAAAAAAAAAB///////////gAAAAAAAAAAAAAAAAAAP4AH//zvgCH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////+AAAAAAAAAAAAAAAAAB///////////AAAAAAAAAAAAAAAAAAAP+AH//D+gAH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////gAAAAAAAAAAAAAAAAA///////////AAAAAAAAAAAAAAAAAAAH/AD//D+AAB+DgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////0AAAAAAAAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAH/wD//D8AAA+P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////////+AAAAAAAAAAAAAAAAP/////////4AAAAAAAAAAAAAAAAAAAD/wD//H+ADh+f/gAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////////////AAAAAAAAAAAAAAAAH/////////4AAAAAAAAAAAAAAAAAAAB/4Av+D+B/4f//8AAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////////gAAAAAAAAAAAAAAAD/////////wAAAAAAAAAAAAAAAAAAAA/wAAeB+AwEf///wADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////wAAAAAAAAAAAAAAAD/////////wAAAAAAAAAAAAAAAAAAAAfwAASBnAAAY///4AHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////8AAAAAAAAAAAAAAAB/////////gAAAAAAAAAAAAAAAAAAAAPwAAABtgAAAf//8AHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////////wAAAAAAAAAAAAAAB/////////AAAAAAAAAAAAAAAAAAAAAHwAAADjgAACB//8J8EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////////wAAAAAAAAAAAAAAA/////////AAAAAAAAAAAAAAAAAAAAAB+AAABhAAADA///P4GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB///////////////4AAAAAAAAAAAAAAA/////////AAAAAAAAAAAAAAAAAAAAAAfhAAAAAAADA///3wDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////////4AAAAAAAAAAAAAAAf////////gAAAAAAAAAAAAAAAAAAAAA//8AAAAAACAf//wADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////////////4AAAAAAAAAAAAAAAf////////gAAAAAAAAAAAAAAAAAAAAAP/8AAAAAAAAf//gAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////////////4AAAAAAAAAAAAAAAf////////gAAAAAAAAAAAAAAAAAAAAAA//gAAAAAAA///wAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////////////wAAAAAAAAAAAAAAAP////////gAAAAAAAAAAAAAAAAAAAAAAB/89zB4AAB/+D4AAA0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////wAAAAAAAAAAAAAAAf////////gAAAAAAAAAAAAAAAAAAAAAAAAQ//HwAAAB+B4AAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////gAAAAAAAAAAAAAAAf////////wAAAAAAAAAAAAAAAAAAAAAAAABhAfAAAAA8A+AAAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////gAAAAAAAAAAAAAAAP////////wAAAAAAAAAAAAAAAAAAAAAAAAAHwcAAAAAAAfgAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////////////AAAAAAAAAAAAAAAAP////////4AAAAAAAAAAAAAAAAAAAAAAAAAAw4AAAAAAAfwAADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////+AAAAAAAAAAAAAAAAH////////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAwAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////8AAAAAAAAAAAAAAAAH////////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////////4AAAAAAAAAAAAAAAAH////////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdYAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////////4AAAAAAAAAAAAAAAAP////////4AAcAAAAAAAAAAAAAAAAAAAAAAAAAAD/8AeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////wAAAAAAAAAAAAAAAAP////////8AAcAAAAAAAAAAAAAAAAAAAAAAAAAAH/8AfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////wAAAAAAAAAAAAAAAAf////////8AAcAAAAAAAAAAAAAAAAAAAAAAAAAAP/4AfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////////gAAAAAAAAAAAAAAAAf////////8AB+AAAAAAAAAAAAAAAAAAAAAAAAAYf/4AfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////////gAAAAAAAAAAAAAAAA/////////8AA+AAAAAAAAAAAAAAAAAAAAAAAAB8//wAfQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////////gAAAAAAAAAAAAAAAA/////////8AB+AAAAAAAAAAAAAAAAAAAAAAAAD///wAf4AAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////////////gAAAAAAAAAAAAAAAA/////////4AH+AAAAAAAAAAAAAAAAAAAAAAAAH///wAf4AAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf///////////gAAAAAAAAAAAAAAAB/////////4Af+AAAAAAAAAAAAAAAAAAAAAAAAP///+A/4AAAAAAGAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///////////gAAAAAAAAAAAAAAAB/////////4D/+AAAAAAAAAAAAAAAAAAAAAAAA/////A/4AAAAAADAAADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB///////////AAAAAAAAAAAAAAAAB/////////gD/8AAAAAAAAAAAAAAAAAAAAAAAB/////w/8AAAAAABAAAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////////AAAAAAAAAAAAAAAAB/////////AH/4AAAAAAAAAAAAAAAAAAAAAAAD/////5/8AAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////////AAAAAAAAAAAAAAAAB////////4AD/4AAAAAAAAAAAAAAAAAAAAAAAD///////+AAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////+AAAAAAAAAAAAAAAAB////////wAD/4AAAAAAAAAAAAAAAAAAAAAAAD///////+AAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////+AAAAAAAAAAAAAAAAA////////gAD/4AAAAAAAAAAAAAAAAAAAAAAAH///////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////+AAAAAAAAAAAAAAAAAf//////+AAD/4AAAAAAAAAAAAAAAAAAAAAAAP////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////+AAAAAAAAAAAAAAAAAf//////+AAD/wAAAAAAAAAAAAAAAAAAAAAAD/////////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////8AAAAAAAAAAAAAAAAAP//////8AAD/wAAAAAAAAAAAAAAAAAAAAAAP/////////8AAAADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////4AAAAAAAAAAAAAAAAAP//////8AAH/gAAAAAAAAAAAAAAAAAAAAAB//////////8AAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////4AAAAAAAAAAAAAAAAAH//////+AAP/gAAAAAAAAAAAAAAAAAAAAAP//////////+AAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////4AAAAAAAAAAAAAAAAAH//////+AAP/AAAAAAAAAAAAAAAAAAAAAA///////////+AAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////gAAAAAAAAAAAAAAAAAD///////AAP/AAAAAAAAAAAAAAAAAAAAAB////////////wAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////////gAAAAAAAAAAAAAAAAAD///////AAP/AAAAAAAAAAAAAAAAAAAAAB////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////gAAAAAAAAAAAAAAAAAAD///////AAH/AAAAAAAAAAAAAAAAAAAAAB////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////AAAAAAAAAAAAAAAAAAAD///////AAH/AAAAAAAAAAAAAAAAAAAAAB////////////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///////8AAAAAAAAAAAAAAAAAAAD//////+AAH+AAAAAAAAAAAAAAAAAAAAAD////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///////gAAAAAAAAAAAAAAAAAAAB//////4AAD+AAAAAAAAAAAAAAAAAAAAAB////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////AAAAAAAAAAAAAAAAAAAAB//////gAAB4AAAAAAAAAAAAAAAAAAAAAA/////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////AAAAAAAAAAAAAAAAAAAAB//////AAAAgAAAAAAAAAAAAAAAAAAAAAD/////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////+AAAAAAAAAAAAAAAAAAAAB//////AAAAAAAAAAAAAAAAAAAAAAAAAAD/////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////+AAAAAAAAAAAAAAAAAAAAA//////AAAAAAAAAAAAAAAAAAAAAAAAAAD/////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////AAAAAAAAAAAAAAAAAAAAA//////AAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////+AAAAAAAAAAAAAAAAAAAAAf////+AAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////+AAAAAAAAAAAAAAAAAAAAAP////+AAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////+AAAAAAAAAAAAAAAAAAAAAP////+AAAAAAAAAAAAAAAAAAAAAAAAAAAf////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////4AAAAAAAAAAAAAAAAAAAAAH////8AAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////wAAAAAAAAAAAAAAAAAAAAAD////wAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////wAAAAAAAAAAAAAAAAAAAAAB////wAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////gAAAAAAAAAAAAAAAAAAAAAB////gAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////AAAAAAAAAAAAAAAAAAAAAAA////gAAAAAAAAAAAAAAAAAAAAAAAAAAAH////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////+AAAAAAAAAAAAAAAAAAAAAAA///+AAAAAAAAAAAAAAAAAAAAAAAAAAAAH////w///////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////8AAAAAAAAAAAAAAAAAAAAAAA///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAH///4Af/////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/////4AAAAAAAAAAAAAAAAAAAAAAB///4AAAAAAAAAAAAAAAAAAAAAAAAAAAAH//+AAD/////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////4AAAAAAAAAAAAAAAAAAAAAAA///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//4AAB/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////wAAAAAAAAAAAAAAAAAAAAAAA//+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//wAAA9////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////gAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+CAAAA5////4AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////+eAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+AAAAAT////wAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAH////wAAAAAADgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////gAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///gAAAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///AAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///AAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//+AAAAAAAAf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//gAAAAAAAAf4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHPAAAAAAAAAf4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAB/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYYAAAAAAAPPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//zgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf4AAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4AAAAAAAfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4AAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb///AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwAAAAAAA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHwAAAAAAB8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAf+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//AAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//gAH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//wACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP3wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+AAAAAAAAAAAAAAAeAABAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/gAAAAAAAAAYAAAB/AA/wAAgAH/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//gAAAAAAAAA8AAAP/////gH///////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AIAAAAAP////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////4//AAAB//////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf////////gAAP//////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8AH/////////wAA/////////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAef/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/4P/////////wAB//////////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///gAAAAAAAAAAAAAAAAAAAAAAEAID4AAA/////////////wH////////////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/f/wAAAAAAAAAAAAAAAAAAAAAA/4///wf/////////////8AP////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///4AAAAAAAAAAAAAAAAACAAA//////////////////////gP///////////////////////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///4AAAAAAAAAAAAAAAAHH/+f//////////////////////B/////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAB/iAAAAAAB//n/4AAAAAAAAAAAAAAAAf/////////////////////////8B/////////////////////////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+AAAAAAA//n/8AAAAAAAAAAAAAAAB/////////////////////////////////////////////////////////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAP/BAAQAAAAAQP/8AAAAAAAAAAAAAAAf////////////////////////////////////////////////////////////+AAAAAAAAAAAAAAAAAAAAHgQIAAAAH/wf//8AwgD///+AAAAAAAAAAAAAAH/////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAA8/wAgAAH/////////////+AAAAAAAAAAAAAAH/////////////////////////////////////////////////////////////4AAAAAAAAAAAAAAAAAB//+Hv//5AAD/////////////8AAAAAAAAAAAAAAD////////////////////////////////////////////////////////////+AAAAAAAAAAAAAAAAAD/////////+A8P////////////AAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAeP/////////////////////////8AAAAAAAAAAAAAAD/////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAf//////////////////////////gAAAAAAAAAAAAAB/////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAf/////////////////////////wAAAAAAAAAAAAD///////////////////////////////////////////////////////////////8AAAAAAAAAAAAYAAP/////////////////////////4AAAAAAAAAAAAAP///////////////////////////////////////////////////////////////4AAAAAAAAAAAAf///////////////////////////AAAAAAAAAAAAAAD////////////////////////////////////////////////////////////////+AAAAAAAAAAAAf///////////////////////////4AAAAAAAAIAAAD/////////////////////////////////////////////////////////////////+AAAAAAAAAAHwf///////////////////////////gAAAAAAAH/4AA///////////////////////////////////////////////////////////////////8AAAAAAAAAP8A//////////////////////////gAAAAAAAAP/4AA///////////////////////////////////////////////////////////////////8AAAAAAAAAB/Af/////////////////////////AAAAAAAAAf/8AA//////////////////////////////////////////////////////////////////8AAAAAAAAAAAQAAAH///////////////////////4AAAAGAAD//8AAAA///////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAf///////////////////////8AB//gA///8AAAAP//////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAB/////////////////////////wA//gB//4AAAH////////////////////////////////////////////////////////////////4AAAAAAAAAAAAAD//////////////////////////////gBAAAQAAP//////////////////////////////////////////////////////////////////+AAAAAAAAAAAAAAP//////////////////////////////AAAAP/h////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAA///////////////////////////////gA////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAB///////////////////////////////5//////////////////////////////////////////////////////////////////////////gAAAAAAAAAAAAB///////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAIAAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////4AAAf4f+AAAAAB/////////////////////////////////////////////////////////////////////////////////////////////////////////////4/////wAAAAA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+AP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
+  </script>
+
+  <script>
+    (function () {
+      "use strict";
+      var $ = function (s) { return document.querySelector(s); };
+      var canvas = $("#stage"), ctx = canvas.getContext("2d");
+      var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var DEG = Math.PI / 180;
+
+      /* ---------- đất liền → các chấm ---------- */
+      var raw = atob(LAND_B64), land = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) land[i] = raw.charCodeAt(i);
+      function isLand(lat, lon) {
+        var x = Math.floor((lon + 180) / 360 * 720), y = Math.floor((90 - lat) / 180 * 360);
+        x = Math.max(0, Math.min(719, x)); y = Math.max(0, Math.min(359, y));
+        return (land[y * 90 + (x >> 3)] >> (7 - (x & 7))) & 1;
+      }
+      // đa giác gần đúng của Việt Nam (lon, lat) để làm nổi bật màu
+      var VN = [[102.1, 22.4], [102.9, 21.2], [104.1, 20.9], [104.5, 19.8], [105.1, 18.7], [105.9, 17.9], [106.5, 17.0], [107.2, 16.4],
+      [107.4, 15.8], [107.6, 15.3], [107.4, 14.7], [107.5, 14.3], [107.6, 13.7], [107.4, 12.4], [107.5, 11.9], [106.5, 11.6], [106.0, 11.1],
+      [105.8, 10.9], [105.4, 10.0], [104.8, 8.6], [105.4, 8.5], [106.8, 9.5], [107.5, 10.3], [108.8, 11.2], [109.5, 12.0], [109.4, 13.4],
+      [109.2, 14.2], [108.9, 15.3], [108.4, 16.2], [107.6, 16.8], [106.8, 17.9], [106.1, 19.2], [106.4, 20.0], [107.1, 20.9], [108.1, 21.5],
+      [107.9, 22.2], [106.7, 22.9], [105.3, 23.4], [104.4, 22.8], [103.5, 22.7], [102.5, 22.7]];
+      function inVN(lon, lat) {
+        var c = false;
+        for (var a = 0, b = VN.length - 1; a < VN.length; b = a++) {
+          var xi = VN[a][0], yi = VN[a][1], xj = VN[b][0], yj = VN[b][1];
+          if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c;
+        }
+        return c;
+      }
+
+      var PX = [], PY = [], PZ = [], PV = [];
+      function addPoint(lat, lon, vn) {
+        var cl = Math.cos(lat * DEG);
+        PX.push(cl * Math.sin(lon * DEG)); PY.push(Math.sin(lat * DEG)); PZ.push(cl * Math.cos(lon * DEG)); PV.push(vn ? 1 : 0);
+      }
+      var N = 17000, GA = Math.PI * (3 - Math.sqrt(5));
+      for (var k = 0; k < N; k++) {
+        var y = 1 - 2 * (k + 0.5) / N, r = Math.sqrt(1 - y * y), ph = k * GA;
+        var lat = Math.asin(y) / DEG, lon = Math.atan2(Math.cos(ph) * r, Math.sin(ph) * r) / DEG;
+        if (isLand(lat, lon)) addPoint(lat, lon, inVN(lon, lat));
+      }
+      var PN = PX.length;
+      var SX = new Float32Array(PN), SY = new Float32Array(PN), SZ = new Float32Array(PN);
+
+      /* ---------- trạng thái xoay ---------- */
+      var W = 0, H = 0, dpr = 1, R = 300, zoom = 1, zoomT = 1;
+      var cLon = (106 - 110) * DEG, cLat = 16 * DEG;   // bắt đầu lệch, sau đó xoay vào Việt Nam
+      var vLon = 0, vLat = 0, dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0, moved = false;
+      var anim = null, idleSince = performance.now() + 1500, modalOpen = false;
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        R = Math.min(W * 0.46, H * 0.40);
+      }
+      window.addEventListener("resize", resize); resize();
+
+      function shortest(a, b) { var d = (b - a) % (2 * Math.PI); if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; return d; }
+      function ease(t) { return 1 - Math.pow(1 - t, 3); }
+      function flyTo(lat, lon, dur, then) {
+        anim = { t0: performance.now(), dur: dur, lon0: cLon, dLon: shortest(cLon, lon * DEG), lat0: cLat, dLat: lat * DEG - cLat, then: then };
+        vLon = vLat = 0;
+      }
+      if (!reduced) flyTo(16, 106, 2600); else { cLon = 106 * DEG; }
+
+      // chiếu một điểm (x,y,z đơn vị) ra màn hình
+      function project(x, y, z) {
+        var ca = Math.cos(-cLon), sa = Math.sin(-cLon);
+        var x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+        var cp = Math.cos(cLat), sp = Math.sin(cLat);
+        var y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+        return { x: W / 2 + R * zoom * x1, y: H / 2 - R * zoom * y2, z: z2 };
+      }
+      function ll(lat, lon) { var cl = Math.cos(lat * DEG); return project(cl * Math.sin(lon * DEG), Math.sin(lat * DEG), cl * Math.cos(lon * DEG)); }
+
+      /* ---------- vẽ ---------- */
+      function frame(now) {
+        // cập nhật chuyển động
+        if (anim) {
+          var t = Math.min(1, (now - anim.t0) / anim.dur), e = ease(t);
+          cLon = anim.lon0 + anim.dLon * e; cLat = anim.lat0 + anim.dLat * e;
+          if (t >= 1) { var cb = anim.then; anim = null; idleSince = now; if (cb) cb(); }
+        } else if (!dragging) {
+          cLon += vLon; cLat += vLat; vLon *= 0.95; vLat *= 0.95;
+          if (!reduced && !modalOpen && now - idleSince > 3500) cLon += 0.0016;
+        }
+        cLat = Math.max(-1.25, Math.min(1.25, cLat));
+        zoom += (zoomT - zoom) * 0.12;
+
+        ctx.clearRect(0, 0, W, H);
+        var cx = W / 2, cy = H / 2, RR = R * zoom;
+
+        // cập nhật vị trí glow ring theo quả địa cầu
+        var gr = document.getElementById('glow-ring');
+        if (gr) { gr.style.left = cx + 'px'; gr.style.top = cy + 'px'; gr.style.width = (RR * 2.2) + 'px'; gr.style.height = (RR * 2.2) + 'px'; }
+
+        // lớp không khí / atmosphere
+        var atm = ctx.createRadialGradient(cx, cy, RR * 0.85, cx, cy, RR * 1.18);
+        atm.addColorStop(0, 'rgba(255,100,60,.0)');
+        atm.addColorStop(0.4, 'rgba(255,100,60,.12)');
+        atm.addColorStop(0.7, 'rgba(255,160,80,.08)');
+        atm.addColorStop(1, 'rgba(255,80,40,.0)');
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cx, cy, RR * 1.18, 0, 6.2832);
+        ctx.fillStyle = atm; ctx.fill();
+        ctx.restore();
+
+        // đĩa Trái Đất + viền sáng
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cx, cy, RR, 0, 6.2832);
+        // gradient sphere shading
+        var sph = ctx.createRadialGradient(cx - RR * 0.3, cy - RR * 0.3, RR * 0.1, cx, cy, RR);
+        sph.addColorStop(0, '#c83a30');
+        sph.addColorStop(0.5, '#8c2320');
+        sph.addColorStop(1, '#3a0a08');
+        ctx.fillStyle = sph;
+        ctx.shadowColor = 'rgba(255,200,60,.5)'; ctx.shadowBlur = 44; ctx.fill();
+        ctx.shadowBlur = 0;
+        // rim light
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,210,100,.4)'; ctx.stroke();
+        ctx.restore();
+
+        // specular highlight
+        ctx.save();
+        var spec = ctx.createRadialGradient(cx - RR * 0.38, cy - RR * 0.38, 0, cx - RR * 0.38, cy - RR * 0.38, RR * 0.5);
+        spec.addColorStop(0, 'rgba(255,255,255,.12)');
+        spec.addColorStop(0.5, 'rgba(255,255,255,.04)');
+        spec.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.beginPath(); ctx.arc(cx, cy, RR, 0, 6.2832);
+        ctx.fillStyle = spec; ctx.fill();
+        ctx.restore();
+
+        // chiếu toàn bộ chấm
+        var ca = Math.cos(-cLon), sa = Math.sin(-cLon), cp = Math.cos(cLat), sp = Math.sin(cLat);
+        for (var i = 0; i < PN; i++) {
+          var x = PX[i], y = PY[i], z = PZ[i];
+          var x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+          SX[i] = cx + RR * x1; SY[i] = cy - RR * (y * cp - z1 * sp); SZ[i] = y * sp + z1 * cp;
+        }
+        var s = Math.max(1.3, RR / 190);
+        // mặt sau: mờ
+        ctx.fillStyle = "rgba(255,200,60,.10)";
+        for (i = 0; i < PN; i++) if (SZ[i] <= 0) ctx.fillRect(SX[i], SY[i], s * .8, s * .8);
+        // mặt trước, ngoài Việt Nam
+        ctx.fillStyle = "#ffd400";
+        for (i = 0; i < PN; i++) if (SZ[i] > 0.2 && !PV[i]) ctx.fillRect(SX[i] - s / 2, SY[i] - s / 2, s, s);
+        // vùng sát rìa: trắng ngà
+        ctx.fillStyle = "#fff6c8";
+        for (i = 0; i < PN; i++) if (SZ[i] > 0 && SZ[i] <= 0.2 && !PV[i]) ctx.fillRect(SX[i] - s / 2, SY[i] - s / 2, s, s);
+        // Việt Nam: sáng và to hơn
+        ctx.fillStyle = "#fff23a";
+        ctx.shadowColor = "rgba(255,240,80,.9)"; ctx.shadowBlur = 6;
+        for (i = 0; i < PN; i++) if (SZ[i] > 0 && PV[i]) ctx.fillRect(SX[i] - s * .8, SY[i] - s * .8, s * 1.6, s * 1.6);
+        ctx.shadowBlur = 0;
+
+        // các điểm bấm được
+        ctx.font = "600 12px " + getComputedStyle(document.body).fontFamily;
+        ctx.textBaseline = "middle";
+        for (var m = 0; m < MARKERS.length; m++) {
+          var mk = MARKERS[m], p = ll(mk.lat, mk.lon);
+          mk._p = p;
+          if (p.z < 0.08) continue;
+          var core = mk.big ? 7 : 5.5, ph2 = ((now / 1000) + m * 0.4) % 1.6 / 1.6;
+          ctx.beginPath(); ctx.arc(p.x, p.y, core + ph2 * 16, 0, 6.2832);
+          ctx.strokeStyle = "rgba(53,242,230," + (0.7 * (1 - ph2)).toFixed(3) + ")"; ctx.lineWidth = 2; ctx.stroke();
+          ctx.save();
+          ctx.beginPath(); ctx.arc(p.x, p.y, core, 0, 6.2832);
+          ctx.fillStyle = "#35f2e6"; ctx.shadowColor = "#35f2e6"; ctx.shadowBlur = 16; ctx.fill();
+          ctx.shadowBlur = 0; ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
+          ctx.restore();
+          if (mk === hover || mk.big) {
+            ctx.fillStyle = "#fff"; ctx.shadowColor = "rgba(0,0,0,.6)"; ctx.shadowBlur = 4;
+            ctx.fillText(mk.name, p.x + core + 8, p.y); ctx.shadowBlur = 0;
+          }
+        }
+        // vẽ custom markers
+        drawCustomMarkers(now);
+        requestAnimationFrame(frame);
+      }
+
+      /* ---------- tương tác ---------- */
+      var hover = null;
+      function hit(px, py) {
+        var best = null, bd = 16;
+        for (var m = 0; m < MARKERS.length; m++) {
+          var p = MARKERS[m]._p; if (!p || p.z < 0.08) continue;
+          var d = Math.hypot(p.x - px, p.y - py); if (d < bd) { bd = d; best = MARKERS[m]; }
+        }
+        return best;
+      }
+
+      /* Hỗ trợ cảm ứng đa điểm: Kéo xoay, Chụm 2 ngón phóng to/thu nhỏ, Chạm đúp */
+      var activePointers = new Map();
+      var pinchStartDist = 0;
+      var pinchStartZoom = 1;
+      var isPinching = false;
+      var lastTapTime = 0, lastTapX = 0, lastTapY = 0;
+
+      canvas.addEventListener("pointerdown", function (e) {
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) { }
+
+        if (activePointers.size === 1) {
+          dragging = true; moved = false; anim = null; vLon = vLat = 0;
+          isPinching = false;
+          lastX = downX = e.clientX; lastY = downY = e.clientY;
+          canvas.classList.add("grabbing");
+        } else if (activePointers.size >= 2) {
+          // Bắt đầu chụm 2 ngón tay để phóng to / thu nhỏ
+          isPinching = true;
+          dragging = false;
+          moved = true; // Ngăn không kích hoạt click khi thả ngón tay
+          var pts = Array.from(activePointers.values());
+          pinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+          pinchStartZoom = zoomT;
+        }
+      });
+
+      canvas.addEventListener("pointermove", function (e) {
+        if (!activePointers.has(e.pointerId)) {
+          // Di chuột khi chưa nhấn (hover trên máy tính)
+          hover = hit(e.clientX, e.clientY);
+          cmHover = hitCustom(e.clientX, e.clientY);
+          canvas.classList.toggle("hot", !!(hover || cmHover));
+          return;
+        }
+
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (activePointers.size >= 2) {
+          // Xử lý zoom bằng 2 ngón tay
+          var pts = Array.from(activePointers.values());
+          var curDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+          if (pinchStartDist > 10 && curDist > 10) {
+            var factor = curDist / pinchStartDist;
+            zoomT = Math.max(0.6, Math.min(5.0, pinchStartZoom * factor));
+            idleSince = performance.now();
+          }
+        } else if (dragging && activePointers.size === 1) {
+          var dx = e.clientX - lastX, dy = e.clientY - lastY;
+          if (Math.hypot(e.clientX - downX, e.clientY - downY) > 5) moved = true;
+          var f = 1 / (R * zoom);
+          cLon -= dx * f; cLat += dy * f; vLon = -dx * f; vLat = dy * f;
+          lastX = e.clientX; lastY = e.clientY; idleSince = performance.now();
+        }
+      });
+
+      function handlePointerEnd(e) {
+        var wasPinch = isPinching || activePointers.size >= 2;
+        var wasDragging = dragging;
+        activePointers.delete(e.pointerId);
+        try { canvas.releasePointerCapture(e.pointerId); } catch (err) { }
+
+        if (activePointers.size === 1) {
+          // Còn lại 1 ngón tay, chuyển mượt sang kéo tiếp
+          var remaining = Array.from(activePointers.values())[0];
+          lastX = downX = remaining.x;
+          lastY = downY = remaining.y;
+          dragging = true;
+          moved = true;
+        } else if (activePointers.size === 0) {
+          dragging = false;
+          canvas.classList.remove("grabbing");
+          idleSince = performance.now();
+
+          if (!moved && !wasPinch && wasDragging) {
+            if (addMode) {
+              var ll2 = canvasToLatLon(e.clientX, e.clientY);
+              if (ll2) openNewMarkerForm(ll2.lat, ll2.lon);
+              return;
+            }
+            // Kiểm tra mốc tự tạo
+            var cmk = hitCustom(e.clientX, e.clientY);
+            if (cmk) {
+              zoomT = Math.max(zoomT, cmk.z || 2.0);
+              flyTo(cmk.lat, cmk.lon, 1000, function () { openCustomMarker(cmk.id); });
+              return;
+            }
+            // Kiểm tra mốc sự kiện lịch sử
+            var mk = hit(e.clientX, e.clientY);
+            if (mk) {
+              select(mk);
+              return;
+            }
+
+            // Chạm đúp (Double tap) vào nền địa cầu để phóng to / thu nhỏ
+            var now = performance.now();
+            if (now - lastTapTime < 320 && Math.hypot(e.clientX - lastTapX, e.clientY - lastTapY) < 35) {
+              lastTapTime = 0;
+              if (zoomT > 1.4) {
+                zoomT = 1.0;
+              } else {
+                zoomT = 2.4;
+                var llTap = canvasToLatLon(e.clientX, e.clientY);
+                if (llTap) flyTo(llTap.lat, llTap.lon, 600);
+              }
+              idleSince = performance.now();
+              return;
+            }
+            lastTapTime = now;
+            lastTapX = e.clientX;
+            lastTapY = e.clientY;
+          }
+          isPinching = false;
+        }
+      }
+
+      canvas.addEventListener("pointerup", handlePointerEnd);
+      canvas.addEventListener("pointercancel", handlePointerEnd);
+
+      // Ngăn chặn cử chỉ mặc định của Safari iOS
+      canvas.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
+      canvas.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
+      canvas.addEventListener("gestureend", function (e) { e.preventDefault(); }, { passive: false });
+
+      // Cuộn chuột phóng to / thu nhỏ trên máy tính
+      canvas.addEventListener("wheel", function (e) {
+        e.preventDefault(); zoomT = Math.max(0.6, Math.min(5, zoomT * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
+        idleSince = performance.now();
+      }, { passive: false });
+
+      // chọn một điểm: xoay tới điểm đó rồi mở ảnh
+      function select(mk, ei) { zoomT = Math.max(zoomT, mk.z || 1.6); flyTo(mk.lat, mk.lon, 1000, function () { openModal(mk, ei || 0); }); }
+
+      /* ---------- dòng thời gian ---------- */
+      var tl = $("#tl"), tlBtn = $("#tl-toggle");
+      function placeById(id) { return MARKERS.filter(function (m) { return m.id === id; })[0]; }
+      PERIODS.forEach(function (per, pi) {
+        var d = document.createElement("details"); if (pi === 0) d.open = true;
+        var s = document.createElement("summary"); s.textContent = per.title;
+        var sm = document.createElement("small"); sm.textContent = per.sub; s.appendChild(sm); d.appendChild(s);
+        EVENTS.forEach(function (ev) {
+          if (ev.p !== pi) return;
+          var b = document.createElement("button"); b.type = "button"; b.className = "ev";
+          var dot = document.createElement("i"), tx = document.createElement("span"), bw = document.createElement("b");
+          bw.textContent = ev.when; tx.appendChild(bw); tx.appendChild(document.createTextNode(" – " + placeById(ev.place).name));
+          b.appendChild(dot); b.appendChild(tx);
+          b.addEventListener("click", function () {
+            var mk = placeById(ev.place), list = EVENTS.filter(function (e) { return e.place === ev.place; });
+            tl.classList.remove("open"); tlBtn.setAttribute("aria-expanded", "false");
+            select(mk, list.indexOf(ev));
+          });
+          d.appendChild(b);
+        });
+        tl.appendChild(d);
+      });
+      tlBtn.addEventListener("click", function () {
+        var o = tl.classList.toggle("open"); tlBtn.setAttribute("aria-expanded", o ? "true" : "false");
+      });
+
+      /* ---------- ảnh & cửa sổ ---------- */
+      var KEY = "vn-globe-img:", mem = {}, current = null, evs = [], idx = 0;
+
+      /* ================================================================
+         CUSTOM MARKERS – tính năng thêm mốc tự do
+         Cấu trúc lưu:
+           localStorage["vn-custom-markers"] = JSON array of:
+           { id, name, lat, lon, z, milestones: [{id, when, text, image}] }
+         ================================================================ */
+      var CM_KEY = "vn-custom-markers";
+      var customMarkers = [];
+      var addMode = false;
+      var editingCM = null;   // marker đang mở trong custom modal
+      var msFileTarget = null; // milestone đang chờ ảnh
+
+      function loadCustomMarkers() {
+        try { customMarkers = JSON.parse(localStorage.getItem(CM_KEY) || "[]"); } catch(e) { customMarkers = []; }
+      }
+      function saveCustomMarkers() {
+        try { localStorage.setItem(CM_KEY, JSON.stringify(customMarkers)); } catch(e) {}
+      }
+      function cmById(id) { return customMarkers.find(function(m){ return m.id === id; }); }
+      loadCustomMarkers();
+
+      /* Vẽ custom markers (gọi trong frame()) */
+      function drawCustomMarkers(now) {
+        for (var ci = 0; ci < customMarkers.length; ci++) {
+          var cm = customMarkers[ci];
+          var p = ll(cm.lat, cm.lon); cm._p = p;
+          if (p.z < 0.08) continue;
+          var core = 5.5, ph2 = ((now / 1000) + ci * 0.55) % 1.6 / 1.6;
+          // glow ring (orange)
+          ctx.beginPath(); ctx.arc(p.x, p.y, core + ph2 * 14, 0, 6.2832);
+          ctx.strokeStyle = "rgba(255,165,0," + (0.75 * (1 - ph2)).toFixed(3) + ")"; ctx.lineWidth = 2; ctx.stroke();
+          // core dot (orange-gold)
+          ctx.save();
+          ctx.beginPath(); ctx.arc(p.x, p.y, core, 0, 6.2832);
+          ctx.fillStyle = "#ffa500"; ctx.shadowColor = "#ffa500"; ctx.shadowBlur = 14; ctx.fill();
+          ctx.shadowBlur = 0; ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
+          ctx.restore();
+          // label
+          if (cm === cmHover) {
+            ctx.fillStyle = "#ffe8a0"; ctx.shadowColor = "rgba(0,0,0,.6)"; ctx.shadowBlur = 4;
+            ctx.fillText(cm.name, p.x + core + 8, p.y); ctx.shadowBlur = 0;
+          }
+        }
+      }
+      var cmHover = null;
+      function hitCustom(px, py) {
+        var best = null, bd = 16;
+        for (var ci = 0; ci < customMarkers.length; ci++) {
+          var p = customMarkers[ci]._p; if (!p || p.z < 0.08) continue;
+          var d = Math.hypot(p.x - px, p.y - py); if (d < bd) { bd = d; best = customMarkers[ci]; }
+        }
+        return best;
+      }
+
+      /* Chuyển toạ độ canvas → lat/lon trên quả địa cầu */
+      function canvasToLatLon(px, py) {
+        var cx = W/2, cy = H/2, RR = R * zoom;
+        var nx = (px - cx) / RR, ny = -(py - cy) / RR;
+        if (nx*nx + ny*ny > 1) return null;
+        var nz = Math.sqrt(1 - nx*nx - ny*ny);
+        // undo cLat rotation
+        var cp = Math.cos(cLat), sp = Math.sin(cLat);
+        var y3 = ny*cp + nz*sp, z3 = -ny*sp + nz*cp;
+        // undo cLon rotation
+        var ca = Math.cos(-cLon), sa = Math.sin(-cLon);
+        var x4 = nx*ca - z3*sa, z4 = nx*sa + z3*ca;
+        var lat = Math.asin(y3) / DEG;
+        var lon = Math.atan2(x4, z4) / DEG;
+        return { lat: lat, lon: lon };
+      }
+
+      /* -------- Add mode -------- */
+      var addBtn = document.getElementById("add-marker-btn");
+      var addHint = document.getElementById("add-hint");
+      function enterAddMode() {
+        addMode = true;
+        addBtn.classList.add("active");
+        addHint.classList.add("show");
+        canvas.style.cursor = "crosshair";
+        addBtn.title = "Nhấn Esc để hủy chế độ thêm mốc";
+      }
+      function exitAddMode() {
+        addMode = false;
+        addBtn.classList.remove("active");
+        addHint.classList.remove("show");
+        canvas.style.cursor = "";
+        addBtn.title = "Thêm mốc địa điểm mới";
+      }
+      addBtn.addEventListener("click", function() {
+        if (addMode) exitAddMode(); else enterAddMode();
+      });
+
+      /* -------- Mở form tạo custom marker mới -------- */
+      function openNewMarkerForm(lat, lon) {
+        exitAddMode();
+        var body = document.getElementById("cm-body");
+        body.innerHTML = [
+          '<h3>📌 Thêm mốc địa điểm mới</h3>',
+          '<div class="form-group">',
+            '<label>Tên địa điểm</label>',
+            '<input id="cm-name" type="text" placeholder="Ví dụ: Quê hương, Trường cũ…" maxlength="80">',
+          '</div>',
+          '<div class="coord-row">',
+            '<div class="form-group">',
+              '<label>Vĩ độ (Lat)</label>',
+              '<input id="cm-lat" type="number" step="0.0001" value="' + lat.toFixed(4) + '">',
+            '</div>',
+            '<div class="form-group">',
+              '<label>Kinh độ (Lon)</label>',
+              '<input id="cm-lon" type="number" step="0.0001" value="' + lon.toFixed(4) + '">',
+            '</div>',
+          '</div>',
+          '<p class="form-hint">💡 Tọa độ đã được điền tự động từ vị trí bạn nhấp. Bạn có thể chỉnh lại.</p>',
+          '<div class="section-divider"></div>',
+          '<h3 style="font-size:16px;margin-bottom:14px">✨ Dấu ấn đầu tiên</h3>',
+          '<div class="form-group">',
+            '<label>Thời gian / Tiêu đề</label>',
+            '<input id="cm-ms-when" type="text" placeholder="Ví dụ: Tháng 9-2024, Mùa hè năm 18 tuổi…">',
+          '</div>',
+          '<div class="form-group">',
+            '<label>Nội dung / Kỷ niệm</label>',
+            '<textarea id="cm-ms-text" rows="4" placeholder="Kể lại kỷ niệm, sự kiện, cảm xúc…"></textarea>',
+          '</div>',
+          '<div class="form-actions">',
+            '<button class="btn-primary" id="cm-save-new">💾 Tạo mốc</button>',
+            '<span class="spacer"></span>',
+            '<button id="cm-cancel-new">✕ Hủy</button>',
+          '</div>'
+        ].join("");
+        document.getElementById("custom-modal").classList.add("open");
+        document.getElementById("cm-name").focus();
+        document.getElementById("cm-save-new").addEventListener("click", function() {
+          var name = (document.getElementById("cm-name").value || "").trim();
+          if (!name) { document.getElementById("cm-name").focus(); return; }
+          var clat = parseFloat(document.getElementById("cm-lat").value);
+          var clon = parseFloat(document.getElementById("cm-lon").value);
+          if (isNaN(clat) || isNaN(clon)) { alert("Tọa độ không hợp lệ."); return; }
+          var when = (document.getElementById("cm-ms-when").value || "").trim();
+          var text = (document.getElementById("cm-ms-text").value || "").trim();
+          var newCM = {
+            id: "cm_" + Date.now(),
+            name: name,
+            lat: clat,
+            lon: clon,
+            z: 2.0,
+            milestones: []
+          };
+          if (when || text) {
+            newCM.milestones.push({ id: "ms_" + Date.now(), when: when || "(chưa đặt tên)", text: text, image: "" });
+          }
+          customMarkers.push(newCM);
+          saveCustomMarkers();
+          rebuildCustomTimeline();
+          closeCustomModal();
+          // fly to new marker
+          zoomT = Math.max(zoomT, 2.0);
+          flyTo(clat, clon, 1000, function() { openCustomMarker(newCM.id); });
+        });
+        document.getElementById("cm-cancel-new").addEventListener("click", closeCustomModal);
+      }
+
+      /* -------- Mở xem/sửa custom marker -------- */
+      function openCustomMarker(cmId) {
+        var cm = cmById(cmId); if (!cm) return;
+        editingCM = cm;
+        renderCustomMarkerModal();
+        document.getElementById("custom-modal").classList.add("open");
+      }
+      function renderCustomMarkerModal() {
+        var cm = editingCM; if (!cm) return;
+        var body = document.getElementById("cm-body");
+        var html = [
+          '<div class="custom-loc-header">',
+            '<div class="custom-loc-dot"></div>',
+            '<div class="custom-loc-title" id="cm-title">' + escHtml(cm.name) + '</div>',
+          '</div>',
+          '<div style="font-size:12px;color:rgba(255,180,80,.6);margin-bottom:14px">📍 ' + cm.lat.toFixed(4) + ', ' + cm.lon.toFixed(4) + '</div>',
+          '<div class="section-divider"></div>',
+          '<div style="font-size:13px;font-weight:700;color:rgba(255,180,80,.8);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Dấu ấn & Hình ảnh</div>',
+          '<div class="milestone-list" id="cm-ms-list">'
+        ];
+        if (!cm.milestones || cm.milestones.length === 0) {
+          html.push('<p style="font-size:13px;color:rgba(255,200,100,.4);text-align:center;padding:10px 0">Chưa có dấu ấn nào. Thêm dấu ấn đầu tiên bên dưới!</p>');
+        } else {
+          cm.milestones.forEach(function(ms) {
+            html.push(renderMilestoneHTML(ms));
+          });
+        }
+        html.push('</div>');
+        html.push(
+          '<div class="add-milestone-section">',
+            '<h4>➕ Thêm dấu ấn mới</h4>',
+            '<div class="form-group">',
+              '<label>Thời gian / Tiêu đề</label>',
+              '<input id="new-ms-when" type="text" placeholder="Ví dụ: Ngày 1-1-2025, Mùa hè 2024…">',
+            '</div>',
+            '<div class="form-group">',
+              '<label>Nội dung / Kỷ niệm</label>',
+              '<textarea id="new-ms-text" rows="3" placeholder="Viết kỷ niệm, sự kiện, cảm xúc…"></textarea>',
+            '</div>',
+            '<div class="form-actions">',
+              '<button class="btn-primary" id="add-ms-btn">✨ Thêm dấu ấn</button>',
+            '</div>',
+          '</div>',
+          '<div class="section-divider"></div>',
+          '<div class="form-actions">',
+            '<button class="btn-danger" id="cm-delete-loc">🗑 Xóa địa điểm này</button>',
+            '<span class="spacer"></span>',
+            '<button id="cm-close-btn">✕ Đóng</button>',
+          '</div>'
+        );
+        body.innerHTML = html.join("");
+        // bind events
+        document.getElementById("add-ms-btn").addEventListener("click", addMilestone);
+        document.getElementById("cm-close-btn").addEventListener("click", closeCustomModal);
+        document.getElementById("cm-delete-loc").addEventListener("click", function() {
+          if (!confirm('Xóa địa điểm "' + cm.name + '" và tất cả dấu ấn?')) return;
+          customMarkers = customMarkers.filter(function(m){ return m.id !== cm.id; });
+          saveCustomMarkers();
+          rebuildCustomTimeline();
+          closeCustomModal();
+        });
+        // bind milestone buttons
+        bindMilestoneButtons();
+      }
+      function renderMilestoneHTML(ms) {
+        var imgHtml = ms.image
+          ? '<img class="milestone-img" src="' + escHtml(ms.image) + '" alt="' + escHtml(ms.when) + '">'
+          : '<div class="milestone-no-img">📷 Chưa có ảnh</div>';
+        return [
+          '<div class="milestone-item" data-msid="' + ms.id + '">',
+            '<div class="milestone-item-header">',
+              '<div class="milestone-dot"></div>',
+              '<div class="milestone-when">' + escHtml(ms.when) + '</div>',
+            '</div>',
+            '<div class="milestone-text">' + escHtml(ms.text) + '</div>',
+            imgHtml,
+            '<div class="milestone-actions">',
+              '<button class="ms-pick-img" data-msid="' + ms.id + '">📷 ' + (ms.image ? 'Đổi ảnh' : 'Thêm ảnh') + '</button>',
+              ms.image ? '<button class="ms-del-img" data-msid="' + ms.id + '">🗑 Xóa ảnh</button>' : '',
+              '<button class="ms-edit" data-msid="' + ms.id + '">✏️ Sửa</button>',
+              '<button class="ms-del btn-del" data-msid="' + ms.id + '">🗑 Xóa dấu ấn</button>',
+            '</div>',
+          '</div>'
+        ].join("");
+      }
+      function bindMilestoneButtons() {
+        var cm = editingCM; if (!cm) return;
+        // pick image
+        document.querySelectorAll(".ms-pick-img").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            msFileTarget = btn.getAttribute("data-msid");
+            document.getElementById("ms-file").click();
+          });
+        });
+        // delete image
+        document.querySelectorAll(".ms-del-img").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var msid = btn.getAttribute("data-msid");
+            var ms = cm.milestones.find(function(m){ return m.id === msid; });
+            if (ms) { ms.image = ""; saveCustomMarkers(); renderCustomMarkerModal(); }
+          });
+        });
+        // edit milestone
+        document.querySelectorAll(".ms-edit").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var msid = btn.getAttribute("data-msid");
+            var ms = cm.milestones.find(function(m){ return m.id === msid; });
+            if (!ms) return;
+            var when = prompt("Thời gian / Tiêu đề:", ms.when);
+            if (when === null) return;
+            var text = prompt("Nội dung / Kỷ niệm:", ms.text);
+            if (text === null) return;
+            ms.when = when.trim() || ms.when;
+            ms.text = text.trim();
+            saveCustomMarkers();
+            renderCustomMarkerModal();
+          });
+        });
+        // delete milestone
+        document.querySelectorAll(".ms-del").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var msid = btn.getAttribute("data-msid");
+            if (!confirm("Xóa dấu ấn này?")) return;
+            cm.milestones = cm.milestones.filter(function(m){ return m.id !== msid; });
+            saveCustomMarkers();
+            renderCustomMarkerModal();
+          });
+        });
+      }
+      function addMilestone() {
+        var cm = editingCM; if (!cm) return;
+        var when = (document.getElementById("new-ms-when").value || "").trim();
+        var text = (document.getElementById("new-ms-text").value || "").trim();
+        if (!when && !text) {
+          document.getElementById("new-ms-when").focus();
+          return;
+        }
+        cm.milestones.push({ id: "ms_" + Date.now(), when: when || "(chưa đặt tên)", text: text, image: "" });
+        saveCustomMarkers();
+        rebuildCustomTimeline();
+        renderCustomMarkerModal();
+      }
+      function closeCustomModal() {
+        document.getElementById("custom-modal").classList.remove("open");
+        editingCM = null;
+        modalOpen = false;
+        idleSince = performance.now();
+      }
+      function escHtml(s) {
+        return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      }
+
+      /* -------- Image picker for milestones -------- */
+      document.getElementById("ms-file").addEventListener("change", function(e) {
+        var f = e.target.files && e.target.files[0]; e.target.value = "";
+        if (!f || !editingCM || !msFileTarget) return;
+        var ms = editingCM.milestones.find(function(m){ return m.id === msFileTarget; });
+        if (!ms) return;
+        var url = URL.createObjectURL(f), im = new Image();
+        im.onload = function() {
+          var sc = Math.min(1, 1200 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+          ms.image = c.toDataURL("image/jpeg", 0.85);
+          saveCustomMarkers();
+          renderCustomMarkerModal();
+        };
+        im.src = url;
+      });
+
+      /* -------- Custom timeline section -------- */
+      function rebuildCustomTimeline() {
+        var existing = document.getElementById("tl-custom-section");
+        if (existing) existing.remove();
+        if (customMarkers.length === 0) return;
+        var section = document.createElement("details");
+        section.id = "tl-custom-section";
+        section.open = true;
+        var s = document.createElement("summary"); s.textContent = "📌 Mốc của tôi";
+        var sm = document.createElement("small"); sm.textContent = customMarkers.length + " địa điểm tùy chỉnh";
+        s.appendChild(sm); section.appendChild(s);
+        customMarkers.forEach(function(cm) {
+          var b = document.createElement("button"); b.type = "button"; b.className = "ev";
+          var dot = document.createElement("i"); dot.style.background = "#ffa500"; dot.style.boxShadow = "0 0 8px #ffa500";
+          var tx = document.createElement("span");
+          var bw = document.createElement("b"); bw.textContent = cm.milestones && cm.milestones.length ? cm.milestones[0].when : "Chưa có dấu ấn";
+          tx.appendChild(bw); tx.appendChild(document.createTextNode(" – " + cm.name));
+          b.appendChild(dot); b.appendChild(tx);
+          b.addEventListener("click", function() {
+            tl.classList.remove("open"); tlBtn.setAttribute("aria-expanded", "false");
+            zoomT = Math.max(zoomT, cm.z || 2.0);
+            flyTo(cm.lat, cm.lon, 1000, function() { openCustomMarker(cm.id); });
+          });
+          section.appendChild(b);
+        });
+        tl.appendChild(section);
+      }
+      rebuildCustomTimeline();
+      /* load extra events saved by user from previous sessions */
+      (function() {
+        try {
+          var extras = JSON.parse(localStorage.getItem("vn-extra-events") || "[]");
+          extras.forEach(function(ex) {
+            if (!ex.place || !ex.when) return;
+            var ev2 = { p: ex.p || 0, place: ex.place, when: ex.when, text: ex.text || "", image: "", k: ex.k || ("e" + Math.random()) };
+            EVENTS.push(ev2);
+          });
+        } catch(e) {}
+      })();
+      function curEv() { return evs[idx]; }
+      function loadImg(ev) {
+        if (mem[ev.k]) return mem[ev.k];
+        try { var v = localStorage.getItem(KEY + ev.k); if (v) { mem[ev.k] = v; return v; } } catch (e) { }
+        return ev.image || "";
+      }
+      function stored(ev) { try { return !!localStorage.getItem(KEY + ev.k); } catch (e) { return false; } }
+      function openModal(mk, ei) {
+        current = mk; modalOpen = true;
+        evs = EVENTS.filter(function (e) { return e.place === mk.id; });
+        idx = Math.max(0, Math.min(evs.length - 1, ei || 0));
+        $("#m-title").textContent = mk.name;
+        renderEvent(); $("#modal").classList.add("open"); $("#m-close").focus();
+      }
+      /* direction for slide animation: -1 = left, 1 = right */
+      var slideDir = 1;
+      function renderEvent(dir) {
+        slideDir = (dir !== undefined) ? dir : 1;
+        var ev = curEv();
+        $("#m-per").textContent = PERIODS[ev.p].title;
+        $("#m-when").textContent = ev.when; $("#m-cap").textContent = ev.text; $("#m-note").textContent = "";
+        // arrows
+        var multi = evs.length > 1;
+        $("#m-arrow-prev").classList.toggle("visible", multi);
+        $("#m-arrow-next").classList.toggle("visible", multi);
+        // indicator dots
+        var dotsEl = $("#m-dots");
+        dotsEl.innerHTML = "";
+        if (multi) {
+          evs.forEach(function(_, di) {
+            var dot = document.createElement("button");
+            dot.type = "button";
+            dot.className = "photo-dot" + (di === idx ? " active" : "");
+            dot.setAttribute("aria-label", "Mốc " + (di + 1));
+            dot.setAttribute("data-di", di);
+            dot.addEventListener("click", function() {
+              var di2 = parseInt(this.getAttribute("data-di"));
+              var d = di2 > idx ? 1 : -1;
+              idx = di2; renderEvent(d);
+            });
+            dotsEl.appendChild(dot);
+          });
+        }
+        // close add-form if open
+        var addForm = $("#m-add-form");
+        if (addForm) addForm.classList.remove("open");
+        renderPhoto(slideDir);
+      }
+      function renderPhoto(dir) {
+        var ev = curEv(), box = $("#m-photo"), src = loadImg(ev);
+        // keep arrows and dots — only replace content child
+        var oldContent = box.querySelector(".photo-content");
+        if (oldContent) oldContent.remove();
+        var wrap = document.createElement("div");
+        wrap.className = "photo-content";
+        wrap.style.cssText = "display:contents";
+        if (src) {
+          var im = new Image();
+          im.alt = current.name + " – " + ev.when;
+          im.src = src.startsWith("data:") ? src : encodeURI(src);
+          im.onerror = function () {
+            if (im.getAttribute("data-tried-raw") !== "1") {
+              im.setAttribute("data-tried-raw", "1");
+              im.src = src;
+            }
+          };
+          if (dir !== undefined) {
+            im.className = dir > 0 ? "slide-in-right" : "slide-in-left";
+          }
+          wrap.appendChild(im);
+        } else {
+          var d = document.createElement("div"); d.className = "empty";
+          d.textContent = "Chưa có ảnh cho mốc này. Nhấn “Chọn ảnh của bạn” để thêm ảnh từ máy.";
+          wrap.appendChild(d);
+        }
+        // insert before arrows (arrows are first children)
+        var arrows = box.querySelectorAll(".photo-arrow");
+        if (arrows.length) box.insertBefore(wrap, arrows[0]);
+        else box.appendChild(wrap);
+        $("#m-clear").style.display = (mem[ev.k] || stored(ev)) ? "" : "none";
+      }
+      $("#m-arrow-prev").addEventListener("click", function () { idx = (idx - 1 + evs.length) % evs.length; renderEvent(-1); });
+      $("#m-arrow-next").addEventListener("click", function () { idx = (idx + 1) % evs.length; renderEvent(1); });
+      function closeModal() { $("#modal").classList.remove("open"); modalOpen = false; idleSince = performance.now(); resetAddForm(); }
+      function resetAddForm() {
+        var f = $("#m-add-form"); if (f) f.classList.remove("open");
+        var wi = $("#m-new-when"); if (wi) wi.value = "";
+        var ti = $("#m-new-text"); if (ti) ti.value = "";
+        var pr = $("#m-new-img-preview"); if (pr) { pr.src = ""; pr.classList.remove("show"); }
+        var nm = $("#m-new-img-name"); if (nm) nm.textContent = "";
+        pendingNewImg = "";
+      }
+      // toggle add-milestone form
+      $("#m-add-toggle").addEventListener("click", function() {
+        $("#m-add-form").classList.toggle("open");
+        if ($("#m-add-form").classList.contains("open")) $("#m-new-when").focus();
+      });
+      // image picker for new milestone
+      var pendingNewImg = "";
+      $("#m-new-pick-img").addEventListener("click", function() { $("#m-new-img-file").click(); });
+      $("#m-new-img-file").addEventListener("change", function(e) {
+        var f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+        var url = URL.createObjectURL(f), im = new Image();
+        im.onload = function() {
+          var sc = Math.min(1, 1200 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+          pendingNewImg = c.toDataURL("image/jpeg", 0.85);
+          var pr = $("#m-new-img-preview"); pr.src = pendingNewImg; pr.classList.add("show");
+          $("#m-new-img-name").textContent = f.name;
+        }; im.src = url;
+      });
+      // save new milestone to EVENTS
+      $("#m-add-save").addEventListener("click", function() {
+        if (!current) return;
+        var when = ($("#m-new-when").value || "").trim();
+        var text = ($("#m-new-text").value || "").trim();
+        if (!when) { $("#m-new-when").focus(); return; }
+        // find current period from existing events for this place
+        var refEv = evs[evs.length - 1];
+        var newEv = { p: refEv ? refEv.p : 0, place: current.id, when: when, text: text, image: "" };
+        newEv.k = "e" + Date.now();
+        // store image if pending
+        if (pendingNewImg) {
+          mem[newEv.k] = pendingNewImg;
+          try { localStorage.setItem(KEY + newEv.k, pendingNewImg); } catch(err) {}
+        }
+        EVENTS.push(newEv);
+        // persist custom events list
+        try {
+          var stored2 = JSON.parse(localStorage.getItem("vn-extra-events") || "[]");
+          stored2.push({ p: newEv.p, place: newEv.place, when: newEv.when, text: newEv.text, k: newEv.k });
+          localStorage.setItem("vn-extra-events", JSON.stringify(stored2));
+        } catch(err) {}
+        // rebuild timeline for this location
+        evs = EVENTS.filter(function(e) { return e.place === current.id; });
+        idx = evs.length - 1;
+        // add to timeline panel
+        rebuildTimelineForPlace(current.id);
+        resetAddForm();
+        renderEvent(1);
+        $("#m-note").textContent = "✅ Đã thêm mốc mới thành công!";
+      });
+      $("#m-add-cancel").addEventListener("click", resetAddForm);
+      // rebuild timeline entry for a specific place
+      function rebuildTimelineForPlace(placeId) {
+        // find the details element containing buttons for this place and re-render them
+        var buttons = document.querySelectorAll("#tl .ev");
+        // simplest: full re-render of timeline
+        tl.innerHTML = "";
+        PERIODS.forEach(function(per, pi) {
+          var d = document.createElement("details"); if (pi === 0) d.open = true;
+          var s2 = document.createElement("summary"); s2.textContent = per.title;
+          var sm = document.createElement("small"); sm.textContent = per.sub; s2.appendChild(sm); d.appendChild(s2);
+          EVENTS.forEach(function(ev2) {
+            if (ev2.p !== pi) return;
+            var mk2 = placeById(ev2.place); if (!mk2) return;
+            var b = document.createElement("button"); b.type = "button"; b.className = "ev";
+            var dot2 = document.createElement("i"), tx2 = document.createElement("span"), bw2 = document.createElement("b");
+            bw2.textContent = ev2.when; tx2.appendChild(bw2); tx2.appendChild(document.createTextNode(" – " + mk2.name));
+            b.appendChild(dot2); b.appendChild(tx2);
+            (function(ev_cap) {
+              b.addEventListener("click", function() {
+                var mk3 = placeById(ev_cap.place), list3 = EVENTS.filter(function(e) { return e.place === ev_cap.place; });
+                tl.classList.remove("open"); tlBtn.setAttribute("aria-expanded", "false");
+                select(mk3, list3.indexOf(ev_cap));
+              });
+            })(ev2);
+            d.appendChild(b);
+          });
+          tl.appendChild(d);
+        });
+        rebuildCustomTimeline();
+      }
+      $("#m-close").addEventListener("click", closeModal);
+      $("#modal").addEventListener("click", function (e) { if (e.target.id === "modal") closeModal(); });
+      // set modalOpen when custom modal opens
+      document.getElementById("custom-modal").addEventListener("mousedown", function() { modalOpen = true; });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          if (addMode) { exitAddMode(); return; }
+          if (document.getElementById("qr-modal").classList.contains("open")) { closeQrModal(); return; }
+          if (document.getElementById("custom-modal").classList.contains("open")) { closeCustomModal(); return; }
+          if (modalOpen) closeModal();
+          else { tl.classList.remove("open"); tlBtn.setAttribute("aria-expanded", "false"); }
+        } else if (modalOpen) {
+          if (e.key === "ArrowRight" && evs.length > 1) $("#m-next").click();
+          else if (e.key === "ArrowLeft" && evs.length > 1) $("#m-prev").click();
+        }
+      });
+      // custom modal backdrop close
+      document.getElementById("custom-modal").addEventListener("click", function(e) { if (e.target.id === "custom-modal") closeCustomModal(); });
+
+      /* -------- QR Modal Logic -------- */
+      var qrModal = document.getElementById("qr-modal");
+      var qrBtn = document.getElementById("qr-btn");
+      var qrImg = document.getElementById("qr-img");
+      var qrUrlInput = document.getElementById("qr-url-input");
+      var qrCopyBtn = document.getElementById("qr-copy-btn");
+      var qrDownloadBtn = document.getElementById("qr-download-btn");
+      var qrCloseBtn = document.getElementById("qr-close-btn");
+
+      function updateQr(url) {
+        if (!url) return;
+        var qrSrc = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(url);
+        qrImg.src = qrSrc;
+        qrDownloadBtn.href = qrSrc;
+      }
+
+      function openQrModal() {
+        var url = location.href;
+        if (location.protocol === "file:") {
+          url = "http://192.168.100.157:3000";
+        }
+        qrUrlInput.value = url;
+        updateQr(url);
+        qrModal.classList.add("open");
+        modalOpen = true;
+      }
+
+      function closeQrModal() {
+        qrModal.classList.remove("open");
+        modalOpen = false;
+        idleSince = performance.now();
+      }
+
+      qrBtn.addEventListener("click", openQrModal);
+      qrCloseBtn.addEventListener("click", closeQrModal);
+      qrModal.addEventListener("click", function(e) { if (e.target === qrModal) closeQrModal(); });
+
+      /* -------- Floating Zoom Buttons Logic -------- */
+      var zoomInBtn = document.getElementById("zoom-in");
+      var zoomOutBtn = document.getElementById("zoom-out");
+      var zoomResetBtn = document.getElementById("zoom-reset");
+      if (zoomInBtn) {
+        zoomInBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          zoomT = Math.min(5.0, zoomT * 1.35);
+          idleSince = performance.now();
+        });
+      }
+      if (zoomOutBtn) {
+        zoomOutBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          zoomT = Math.max(0.6, zoomT / 1.35);
+          idleSince = performance.now();
+        });
+      }
+      if (zoomResetBtn) {
+        zoomResetBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          zoomT = 1.0;
+          flyTo(16, 106, 900);
+          idleSince = performance.now();
+        });
+      }
+
+      qrUrlInput.addEventListener("input", function() {
+        var u = qrUrlInput.value.trim();
+        if (u) updateQr(u);
+      });
+
+      qrCopyBtn.addEventListener("click", function() {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(qrUrlInput.value).then(function() {
+            qrCopyBtn.textContent = "✅ Đã chép";
+            setTimeout(function() { qrCopyBtn.textContent = "📋 Sao chép"; }, 2000);
+          });
+        } else {
+          qrUrlInput.select();
+          document.execCommand("copy");
+          qrCopyBtn.textContent = "✅ Đã chép";
+          setTimeout(function() { qrCopyBtn.textContent = "📋 Sao chép"; }, 2000);
+        }
+      });
+      $("#m-pick").addEventListener("click", function () { $("#file").click(); });
+      $("#m-clear").addEventListener("click", function () {
+        var ev = curEv(); delete mem[ev.k]; try { localStorage.removeItem(KEY + ev.k); } catch (e) { }
+        renderPhoto(); $("#m-note").textContent = "Đã xóa ảnh.";
+      });
+      $("#file").addEventListener("change", function (e) {
+        var f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f || !current) return;
+        var url = URL.createObjectURL(f), im = new Image(), ev0 = curEv();
+        im.onload = function () {
+          var sc = Math.min(1, 1400 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+          var data = c.toDataURL("image/jpeg", 0.86); mem[ev0.k] = data;
+          var saved = true; try { localStorage.setItem(KEY + ev0.k, data); } catch (err) { saved = false; }
+          if (curEv() === ev0) { renderPhoto(); $("#m-note").textContent = saved ? "Đã lưu ảnh trên trình duyệt này." : "Ảnh hiển thị tạm thời, chưa lưu được trên trình duyệt này."; }
+        };
+        im.onerror = function () { $("#m-note").textContent = "Không đọc được tệp này. Hãy chọn ảnh JPG hoặc PNG."; };
+        im.src = url;
+      });
+
+      requestAnimationFrame(frame);
+
+      /* ---------- intro screen ---------- */
+      var introEl = document.getElementById('intro');
+      var introBtnEl = document.getElementById('intro-btn');
+      function dismissIntro() {
+        if (introEl) {
+          introEl.classList.add('hidden');
+        }
+      }
+      if (introBtnEl) {
+        introBtnEl.addEventListener('click', dismissIntro);
+      }
+      // auto dismiss after 5s if user doesn't interact
+      setTimeout(dismissIntro, 6000);
+    })();
+  </script>
+</body>
+
+</html>
