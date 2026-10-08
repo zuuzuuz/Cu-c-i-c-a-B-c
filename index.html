@@ -1338,7 +1338,9 @@
     }
 
     .intro-flag {
-      font-size: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       animation: introBounce 1.5s ease-out both;
       filter: drop-shadow(0 0 30px rgba(255, 220, 0, .6));
       margin-bottom: 20px;
@@ -1515,7 +1517,12 @@
 
   <!-- Intro screen -->
   <div id="intro" aria-label="Màn hình chào mừng">
-    <div class="intro-flag">🇻🇳</div>
+    <div class="intro-flag" aria-label="Cờ đỏ sao vàng Việt Nam">
+      <svg viewBox="0 0 900 600" width="108" height="72" style="border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 35px rgba(255,215,0,.5);overflow:hidden;border:1.5px solid rgba(255,220,100,.35);display:block;">
+        <rect width="900" height="600" fill="#da251d"/>
+        <polygon points="450,120 490,244 621,244 515,321 556,446 450,369 344,446 385,321 279,244 410,244" fill="#ffff00"/>
+      </svg>
+    </div>
     <h2 class="intro-title">TỰ HÀO VIỆT NAM</h2>
     <div class="intro-line"></div>
     <p class="intro-sub">Hành trình tìm đường cứu nước của Chủ tịch Hồ Chí Minh<br>qua bản đồ Trái Đất 3D tương tác</p>
@@ -1542,7 +1549,12 @@
   <!-- Nút phóng to / thu nhỏ trên màn hình (đặc biệt tiện lợi trên điện thoại) -->
   <div id="zoom-controls" aria-label="Điều khiển phóng to thu nhỏ">
     <button id="zoom-in" class="zoom-btn" type="button" title="Phóng to" aria-label="Phóng to">＋</button>
-    <button id="zoom-reset" class="zoom-btn reset-btn" type="button" title="Về Việt Nam" aria-label="Về Việt Nam">🇻🇳</button>
+    <button id="zoom-reset" class="zoom-btn reset-btn" type="button" title="Về Việt Nam" aria-label="Về Việt Nam">
+      <svg viewBox="0 0 100 100" width="24" height="24" style="border-radius:50%;display:block;overflow:hidden;box-shadow:0 0 10px rgba(255,215,0,.6);pointer-events:none;">
+        <circle cx="50" cy="50" r="50" fill="#da251d"/>
+        <polygon points="50,18 57,39 79,39 61,52 68,73 50,60 32,73 39,52 21,39 43,39" fill="#ffff00"/>
+      </svg>
+    </button>
     <button id="zoom-out" class="zoom-btn" type="button" title="Thu nhỏ" aria-label="Thu nhỏ">－</button>
   </div>
 
